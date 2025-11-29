@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { NavStack } from './components/wireframe/NavStack';
 import { HeroSection } from './components/wireframe/HeroSection';
 import { FeaturesSection } from './components/wireframe/FeaturesSection';
-import { PricingSection } from './components/wireframe/PricingSection';
 import { BlogSection } from './components/wireframe/BlogSection';
 import { FooterSection } from './components/wireframe/FooterSection';
 import { FeatureDetail } from './components/wireframe/FeatureDetail';
@@ -10,18 +9,34 @@ import { CookieBanner } from './components/wireframe/CookieBanner';
 import { CookiePreferencesModal, CookiePreferences } from './components/wireframe/CookiePreferencesModal';
 import { CookiePolicyPage } from './components/wireframe/CookiePolicyPage';
 import { HelpCenterPage } from './components/helpcenter/HelpCenterPage';
+import { InstructionPostPage } from './components/helpcenter/InstructionPostPage';
 import { BlogPage } from './components/blog/BlogPage';
 import { BlogPostPage } from './components/blog/BlogPostPage';
 import { PaymentModal } from './components/wireframe/PaymentModal';
 import { EnterpriseInquiryModal } from './components/wireframe/EnterpriseInquiryModal';
 import { DemoBookingPage } from './components/wireframe/DemoBookingPage';
+import { AboutPage } from './components/pages/AboutPage';
+import { TermsPage } from './components/pages/TermsPage';
+import { FeatureContentPage } from './components/pages/FeatureContentPage';
+import type { FeatureContentId } from './components/pages/FeatureContentPage';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
 import { Monitor, Tablet, Smartphone } from 'lucide-react';
-import { toast, Toaster } from 'sonner@2.0.3';
+import { toast, Toaster } from 'sonner';
 import { Locale, getTranslations } from './locales/translations';
 
-type FeatureId = 'event-session-management' | 'automated-invitations' | 'guest-database' | 'roles-permissions' | 'email-templates' | 'all' | null;
-type ViewType = 'wireframe' | 'references' | 'cookie-policy' | 'help-center' | 'blog' | 'blog-post' | 'demo-booking';
+type FeatureId = FeatureContentId;
+type ViewType =
+  | 'wireframe'
+  | 'references'
+  | 'cookie-policy'
+  | 'help-center'
+  | 'instruction'
+  | 'blog'
+  | 'blog-post'
+  | 'booking'
+  | 'feature'
+  | 'about'
+  | 'terms';
 type PlanType = 'free' | 'basic' | 'pro' | 'enterprise';
 
 export default function App() {
@@ -29,7 +44,7 @@ const [currentView, setCurrentView] = useState<ViewType>('wireframe');
 const [displayedView, setDisplayedView] = useState<ViewType>('wireframe');
 const [transitionStage, setTransitionStage] = useState<'idle' | 'fading-out' | 'fading-in'>('idle');
   const [deviceView, setDeviceView] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const [selectedFeature, setSelectedFeature] = useState<FeatureId>(null);
+  const [selectedFeature, setSelectedFeature] = useState<FeatureId | null>(null);
   
   // Locale state (Traditional Chinese as default/source of truth)
   const [locale, setLocale] = useState<Locale>('tc');
@@ -167,17 +182,60 @@ const initialRenderRef = useRef(true);
     }
   };
 
-  const handleFeatureClick = (featureId: string) => {
-    // If clicking "View All Features", scroll to top or show first feature
-    if (featureId === 'all') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
+  const resolveRoute = useCallback((path: string) => {
+    const normalizedPath = path || '/';
+    let nextView: ViewType = 'wireframe';
+    let feature: FeatureId | null = null;
+
+    if (normalizedPath === '/help-center') {
+      nextView = 'help-center';
+    } else if (normalizedPath.startsWith('/instruction/')) {
+      nextView = 'instruction';
+    } else if (normalizedPath === '/cookie-policy') {
+      nextView = 'cookie-policy';
+    } else if (normalizedPath === '/blog') {
+      nextView = 'blog';
+    } else if (normalizedPath.startsWith('/blog/')) {
+      nextView = 'blog-post';
+    } else if (normalizedPath === '/booking' || normalizedPath === '/demo-booking') {
+      nextView = 'booking';
+    } else if (normalizedPath.startsWith('/features/')) {
+      const slug = normalizedPath.replace('/features/', '') as FeatureId;
+      if (featureDetails[slug]) {
+        feature = slug;
+        nextView = 'feature';
+      } else {
+        nextView = 'wireframe';
+      }
+    } else if (normalizedPath === '/about') {
+      nextView = 'about';
+    } else if (normalizedPath === '/terms') {
+      nextView = 'terms';
+    } else {
+      nextView = 'wireframe';
     }
-    setSelectedFeature(featureId as FeatureId);
-  };
+
+    setSelectedFeature(feature);
+    setCurrentView(nextView);
+  }, []);
+
+  const handleNavigate = useCallback(
+    (path: string, options: { replace?: boolean } = {}) => {
+      const normalizedPath = path || '/';
+      if (options.replace) {
+        window.history.replaceState(null, '', normalizedPath);
+      } else {
+        window.history.pushState(null, '', normalizedPath);
+      }
+      resolveRoute(normalizedPath);
+    },
+    [resolveRoute]
+  );
 
   const handleBackToFeatures = () => {
-    setSelectedFeature(null);
+    // 回到首頁並自動捲動到「產品功能」區塊
+    setScrollTarget('features');
+    handleNavigate('/', { replace: true });
   };
 
   // Cookie handlers
@@ -220,50 +278,27 @@ const initialRenderRef = useRef(true);
 
   const handleViewCookiePolicy = () => {
     setShowCookieBanner(false);
-    setCurrentView('cookie-policy');
-    setSelectedFeature(null);
+    handleNavigate('/cookie-policy');
   };
 
   const handleBackFromCookiePolicy = () => {
-    setCurrentView('wireframe');
+    handleNavigate('/', { replace: true });
   };
 
   const handleBackFromHelpCenter = () => {
-    setCurrentView('wireframe');
+    handleNavigate('/', { replace: true });
   };
 
   const handleNavigateToHelpCenter = () => {
-    setCurrentView('help-center');
-    setSelectedFeature(null);
-  };
-
-  const handleNavigate = (path: string) => {
-    if (path === '/blog') {
-      setCurrentView('blog');
-      setSelectedFeature(null);
-    } else if (path.startsWith('/blog/')) {
-      setCurrentView('blog-post');
-      setSelectedFeature(null);
-    } else if (path === '/help-center') {
-      setCurrentView('help-center');
-      setSelectedFeature(null);
-    } else if (path === '/demo-booking') {
-      setCurrentView('demo-booking');
-      setSelectedFeature(null);
-    } else if (path === '/') {
-      setCurrentView('wireframe');
-      setSelectedFeature(null);
-    }
+    handleNavigate('/help-center');
   };
 
   const handleScrollToPricing = (focusCard?: 'free' | 'basic' | 'pro' | 'enterprise') => {
-    // Ensure we're on the wireframe view
-    if (currentView !== 'wireframe') {
-      setCurrentView('wireframe');
-      setSelectedFeature(null);
+    const needsNavigation = currentView !== 'wireframe';
+    if (needsNavigation) {
+      handleNavigate('/');
     }
 
-    // Use setTimeout to ensure the view has switched before scrolling
     setTimeout(() => {
       const pricingSection = document.getElementById('pricing');
       if (pricingSection) {
@@ -294,7 +329,7 @@ const initialRenderRef = useRef(true);
           }, 300);
         }
       }
-    }, currentView !== 'wireframe' ? 100 : 0);
+    }, needsNavigation ? 150 : 0);
   };
 
   // Handle locale change with smooth transition
@@ -334,6 +369,13 @@ useEffect(() => {
   faviconLink.setAttribute('type', 'image/svg+xml');
   faviconLink.setAttribute('href', faviconUrl);
 }, [locale]);
+
+useEffect(() => {
+  resolveRoute(window.location.pathname || '/');
+  const handlePop = () => resolveRoute(window.location.pathname || '/');
+  window.addEventListener('popstate', handlePop);
+  return () => window.removeEventListener('popstate', handlePop);
+}, [resolveRoute]);
 
 useEffect(() => {
   if (initialRenderRef.current) {
@@ -410,6 +452,19 @@ useEffect(() => {
             />
           </div>
         </div>
+      ) : viewToRender === 'instruction' ? (
+        <div className="flex justify-center pt-12">
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+            <InstructionPostPage
+              locale={locale}
+              isMobile={deviceView === 'mobile'}
+              onNavigate={handleNavigate}
+              onLocaleChange={handleLocaleChange}
+              onScrollToPricing={handleScrollToPricing}
+              onSetScrollTarget={setScrollTarget}
+            />
+          </div>
+        </div>
       ) : viewToRender === 'cookie-policy' ? (
         <div className="flex justify-center pt-12">
           <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
@@ -446,7 +501,7 @@ useEffect(() => {
             />
           </div>
         </div>
-      ) : viewToRender === 'demo-booking' ? (
+      ) : viewToRender === 'booking' ? (
         <div className="flex justify-center pt-12">
           <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white border-2 border-gray-400 shadow-lg overflow-hidden`}>
             <DemoBookingPage
@@ -459,16 +514,97 @@ useEffect(() => {
             />
           </div>
         </div>
-      ) : selectedFeature ? (
+      ) : viewToRender === 'feature' && selectedFeature ? (
         <div className="flex justify-center pt-12">
           <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
-            <FeatureDetail
-              title={featureDetails[selectedFeature].title}
-              description={featureDetails[selectedFeature].description}
-              capabilities={featureDetails[selectedFeature].capabilities}
-              screenshot={featureDetails[selectedFeature].screenshot}
-              onBack={handleBackToFeatures}
+            <NavStack
               isMobile={deviceView === 'mobile'}
+              locale={locale}
+              onLocaleChange={handleLocaleChange}
+              onNavigateToHelpCenter={handleNavigateToHelpCenter}
+              onNavigate={handleNavigate}
+              onSetScrollTarget={setScrollTarget}
+              showBanner={false}
+            />
+            <div className="mt-32">
+              <FeatureContentPage
+                featureId={selectedFeature}
+                isMobile={deviceView === 'mobile'}
+                locale={locale}
+                onBack={handleBackToFeatures}
+                onNavigate={handleNavigate}
+              />
+            </div>
+            <FooterSection
+              isMobile={deviceView === 'mobile'}
+              locale={locale}
+              onNavigate={handleNavigate}
+              onNavigateToHelpCenter={handleNavigateToHelpCenter}
+            />
+          </div>
+        </div>
+      ) : viewToRender === 'about' ? (
+        <div className="flex justify-center pt-12">
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+            <NavStack
+              isMobile={deviceView === 'mobile'}
+              locale={locale}
+              onLocaleChange={handleLocaleChange}
+              onNavigateToHelpCenter={handleNavigateToHelpCenter}
+              onNavigate={handleNavigate}
+              onSetScrollTarget={setScrollTarget}
+              showBanner={false}
+            />
+            <div className="mt-32">
+              <AboutPage
+                title={getTranslations(locale).about.title}
+                subtitle={getTranslations(locale).about.subtitle}
+                sections={[
+                  {
+                    body: getTranslations(locale).about.section1Body
+                  },
+                  {
+                    body: getTranslations(locale).about.section2Body
+                  },
+                  {
+                    body: getTranslations(locale).about.section3Body
+                  }
+                ]}
+                isMobile={deviceView === 'mobile'}
+              />
+            </div>
+            <FooterSection
+              isMobile={deviceView === 'mobile'}
+              locale={locale}
+              onNavigate={handleNavigate}
+              onNavigateToHelpCenter={handleNavigateToHelpCenter}
+            />
+          </div>
+        </div>
+      ) : viewToRender === 'terms' ? (
+        <div className="flex justify-center pt-12">
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+            <NavStack
+              isMobile={deviceView === 'mobile'}
+              locale={locale}
+              onLocaleChange={handleLocaleChange}
+              onNavigateToHelpCenter={handleNavigateToHelpCenter}
+              onNavigate={handleNavigate}
+              onSetScrollTarget={setScrollTarget}
+              showBanner={false}
+            />
+            <div className="mt-32">
+              <TermsPage
+                title={getTranslations(locale).terms.title}
+                subtitle={getTranslations(locale).terms.subtitle}
+                isMobile={deviceView === 'mobile'}
+              />
+            </div>
+            <FooterSection
+              isMobile={deviceView === 'mobile'}
+              locale={locale}
+              onNavigate={handleNavigate}
+              onNavigateToHelpCenter={handleNavigateToHelpCenter}
             />
           </div>
         </div>
@@ -492,6 +628,7 @@ useEffect(() => {
                 onNavigate={handleNavigate}
                 onSetScrollTarget={setScrollTarget}
                 showBanner={true}
+                onBannerAction={() => handleNavigate('/booking')}
               />
               <HeroSection 
                 isMobile={deviceView === 'mobile'} 
@@ -500,7 +637,7 @@ useEffect(() => {
               />
               <FeaturesSection 
                 isMobile={deviceView === 'mobile'} 
-                onFeatureClick={handleFeatureClick} 
+                onNavigate={handleNavigate}
                 locale={locale}
               />
               <BlogSection 
@@ -508,18 +645,11 @@ useEffect(() => {
                 locale={locale}
                 onNavigate={handleNavigate}
               />
-              <PricingSection 
-                isMobile={deviceView === 'mobile'} 
-                locale={locale}
-                onPlanSelect={handlePlanSelect}
-                onEnterpriseInquiry={handleEnterpriseInquiry}
-              />
               <FooterSection 
                 isMobile={deviceView === 'mobile'} 
                 locale={locale}
                 onNavigate={handleNavigate}
                 onNavigateToHelpCenter={handleNavigateToHelpCenter}
-                onScrollToPricing={handleScrollToPricing}
               />
             </div>
           </div>

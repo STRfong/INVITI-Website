@@ -276,6 +276,17 @@ export interface Translations {
     proPlan: string;
     enterprisePlan: string;
   };
+  about: {
+    title: string;
+    subtitle: string;
+    section1Body: string;
+    section2Body: string;
+    section3Body: string;
+  };
+  terms: {
+    title: string;
+    subtitle: string;
+  };
   enterpriseInquiry: {
     title: string;
     close: string;
@@ -352,22 +363,22 @@ export const tc: Translations = {
     pricing: '方案價格',
     helpCenter: '幫助中心',
     login: '登入',
-    tryForFree: '免費試用'
+    tryForFree: '預約展示'
   },
   hero: {
-    title: '用 INVITI 簡化您的賓客邀請流程',
-    subtitle: '為活動主辦者打造的完整 PR 賓客名單管理系統',
+    title: 'INVITI 讓您將寶貴的時間花在關係維護，而非重複的複製貼上',
+    subtitle: '為活動主辦方設計的公關名單管理系統',
     tryForFree: '免費試用',
     bookDemo: '預約展示'
   },
   features: {
     sectionTitle: '產品功能',
-    card1Title: '活動與場次管理',
-    card1Description: '多場次設定、時間與場地一次到位，與郵件變數連動。',
-    card2Title: '自動化邀請與追蹤',
-    card2Description: '批量發信、回覆對應、即時狀態更新。',
-    card3Title: '中央貴賓資料庫',
-    card3Description: '標籤、去重、跨活動再利用。',
+    card1Title: '活動管理／場次管理',
+    card1Description: '一站整合活動名單與寄信流程。',
+    card2Title: '一鍵邀請與追蹤出席狀況',
+    card2Description: '一鍵寄信、即時掌握貴賓出席狀況。',
+    card3Title: '貴賓資料庫',
+    card3Description: '集中管理貴賓資料，累積關係資產。',
     card4Title: '角色與權限',
     card4Description: '協作、權限控管、稽核軌跡。',
     card5Title: '郵件模板',
@@ -391,7 +402,7 @@ export const tc: Translations = {
     post3Description: '2025 年及未來數位活動協調的趨勢與預測。'
   },
   blogPage: {
-    title: 'Tools & Craft',
+    title: '部落格',
     subtitle: '探索產品更新、客戶故事與產業觀點',
     searchPlaceholder: '搜尋文章…',
     allPosts: '最新',
@@ -495,15 +506,15 @@ export const tc: Translations = {
   },
   demoBooking: {
     title: '預約展示',
-    subtitle: '我們會安排一場約 30 分鐘的線上會議，先了解你的公關名單工具、流程與痛點，再示範 INVITI 如何解決。',
+    subtitle: '我們會安排一場約30分鐘的線上會議，了解貴單位目前使用的公關名單管理工具、流程與痛點。',
     ctaButton: '在 Google 行事曆預約時間',
     coverTitle: '會議內容',
     card1Title: '了解現況',
-    card1Description: '你目前使用的名單工具、協作方式、寄信流程',
+    card1Description: '貴單位目前使用的公關名單管理工具、流程以及活動規模、頻率等',
     card2Title: '釐清痛點',
-    card2Description: '資料重複、回覆追蹤、跨同事交接等問題',
-    card3Title: '產品示範',
-    card3Description: '用你的情境展示：邀請、RSVP 追蹤、資料庫管理',
+    card2Description: '目前使用工具或流程上遇到的問題',
+    card3Title: '下一步',
+    card3Description: '若確認貴單位的使用情境符合，我們將會為您開通帳號並協助創建第一個活動',
     agendaTitle: '30 分鐘議程',
     agendaTimeline: '0–5′ 需求簡述｜5–15′ 現況/痛點｜15–25′ 功能示範｜25–30′ Q&A/下一步',
     getTitle: '會後收穫',
@@ -579,6 +590,17 @@ export const tc: Translations = {
     basicPlan: '入門版',
     proPlan: '專業版',
     enterprisePlan: '企業版'
+  },
+  about: {
+    title: '關於我們',
+    subtitle: '',
+    section1Body: '藝氣股份有限公司 ARTSIE INC. 以成為「中文娛樂的整合者」為目標，打造下一個世代多元且有層次的娛樂場景。',
+    section2Body: '從現場喜劇、綜藝節目到 DJ 派對，藝氣與各領域的指標品牌締結策略合作，一起擴大華語娛樂市場，讓台灣成為中文娛樂的重要基地。',
+    section3Body: '同時，我們也專注於開發專屬娛樂產業的後勤管理工具，例如報帳系統、合約管理系統、公關名單管理系統等，期望成為中文娛樂市場最可靠的後勤夥伴。'
+  },
+  terms: {
+    title: '隱私權政策',
+    subtitle: ''
   },
   enterpriseInquiry: {
     title: '聯繫我們了解企業方案',
@@ -656,12 +678,12 @@ export const en: Translations = {
     pricing: 'Pricing',
     helpCenter: 'Help Center',
     login: 'Log in',
-    tryForFree: 'Try for Free'
+    tryForFree: 'Book a Demo'
   },
   hero: {
     title: 'Simplify Your Guest Invitations with INVITI',
     subtitle: 'A complete PR guest list management system for event organizers',
-    tryForFree: 'Try for Free',
+    tryForFree: 'Book a Demo',
     bookDemo: 'Book a Demo'
   },
   features: {
@@ -695,7 +717,7 @@ export const en: Translations = {
     post3Description: 'Trends and predictions for digital event coordination in 2025 and beyond.'
   },
   blogPage: {
-    title: 'Tools & Craft',
+    title: 'Blogs',
     subtitle: 'Explore product updates, customer stories, and industry insights',
     searchPlaceholder: 'Search articles…',
     allPosts: 'All',
@@ -884,6 +906,17 @@ export const en: Translations = {
     proPlan: 'Pro',
     enterprisePlan: 'Enterprise'
   },
+  about: {
+    title: 'About Us',
+    subtitle: '',
+    section1Body: 'ARTSIE INC. aims to become the "Integrator of Chinese Entertainment," creating diverse and multi-layered entertainment experiences for the next generation.',
+    section2Body: 'From live comedy and variety shows to DJ parties, ARTSIE forms strategic partnerships with leading brands across various fields to expand the Chinese-language entertainment market, making Taiwan an important hub for Chinese entertainment.',
+    section3Body: 'At the same time, we focus on developing specialized backend management tools for the entertainment industry, such as expense management systems, contract management systems, and PR guest list management systems, with the goal of becoming the most reliable backend partner in the Chinese entertainment market.'
+  },
+  terms: {
+    title: 'Privacy Policy',
+    subtitle: ''
+  },
   enterpriseInquiry: {
     title: 'Contact Us for Enterprise Plan',
     close: 'Close',
@@ -960,12 +993,12 @@ export const ja: Translations = {
     pricing: '料金',
     helpCenter: 'ヘルプセンター',
     login: 'ログイン',
-    tryForFree: '無料で試す'
+    tryForFree: 'デモを予約'
   },
   hero: {
     title: 'INVITI でゲスト招待を簡素化',
     subtitle: 'イベント主催者のための完全な PR ゲストリスト管理システム',
-    tryForFree: '無料で試す',
+    tryForFree: 'デモを予約',
     bookDemo: 'デモを予約'
   },
   features: {
@@ -999,7 +1032,7 @@ export const ja: Translations = {
     post3Description: '2025 年以降のデジタルイベントコーディネーションのトレンドと予測。'
   },
   blogPage: {
-    title: 'Tools & Craft',
+    title: 'Blogs',
     subtitle: '製品アップデート、顧客事例、業界インサイトを探索',
     searchPlaceholder: '記事を検索…',
     allPosts: 'すべて',
@@ -1188,6 +1221,17 @@ export const ja: Translations = {
     proPlan: 'プロ',
     enterprisePlan: 'エンタープライズ'
   },
+  about: {
+    title: '私たちについて',
+    subtitle: '',
+    section1Body: '藝氣股份有限公司 ARTSIE INC. は「中国語エンターテインメントの統合者」となることを目標に、次世代の多様で多層的なエンターテインメントシーンを創造しています。',
+    section2Body: 'ライブコメディ、バラエティ番組から DJ パーティーまで、藝氣は各分野のリーディングブランドと戦略的パートナーシップを結び、中国語エンターテインメント市場を拡大し、台湾を中国語エンターテインメントの重要な拠点にしています。',
+    section3Body: '同時に、経費管理システム、契約管理システム、PR ゲストリスト管理システムなど、エンターテインメント産業専用のバックエンド管理ツールの開発にも注力し、中国語エンターテインメント市場で最も信頼できるバックエンドパートナーとなることを目指しています。'
+  },
+  terms: {
+    title: 'プライバシーポリシー',
+    subtitle: ''
+  },
   enterpriseInquiry: {
     title: 'エンタープライズプランについてお問い合わせ',
     close: '閉じる',
@@ -1264,22 +1308,22 @@ export const zhHans: Translations = {
     pricing: '方案价格',
     helpCenter: '帮助中心',
     login: '登录',
-    tryForFree: '免费试用'
+    tryForFree: '预约展示'
   },
   hero: {
-    title: '用 INVITI 简化您的宾客邀请流程',
-    subtitle: '为活动主办者打造的完整 PR 宾客名单管理系统',
+    title: 'INVITI 让您将宝贵的时间花在关系维护，而非重复的复制贴上',
+    subtitle: '为活动主办方设计的公关名单管理系统',
     tryForFree: '免费试用',
     bookDemo: '预约展示'
   },
   features: {
     sectionTitle: '产品功能',
-    card1Title: '活动与场次管理',
-    card1Description: '多场次设定、时间与场地一次到位，与邮件变量联动。',
-    card2Title: '自动化邀请与追踪',
-    card2Description: '批量发信、回复对应、实时状态更新。',
-    card3Title: '中央宾客资料库',
-    card3Description: '标签、去重、跨活动再利用。',
+    card1Title: '活动管理／场次管理',
+    card1Description: '一站整合活动名单与寄信流程。',
+    card2Title: '一键邀请与追踪出席状况',
+    card2Description: '一键寄信、即时掌握贵宾出席状况。',
+    card3Title: '贵宾资料库',
+    card3Description: '集中管理贵宾资料，累积关系资产。',
     card4Title: '角色与权限',
     card4Description: '协作、权限控管、稽核轨迹。',
     card5Title: '邮件模板',
@@ -1303,7 +1347,7 @@ export const zhHans: Translations = {
     post3Description: '2025 年及未来数字活动协调的趋势与预测。'
   },
   blogPage: {
-    title: 'Tools & Craft',
+    title: 'Blogs',
     subtitle: '探索产品更新、客户故事与产业观点',
     searchPlaceholder: '搜索文章…',
     allPosts: '最新',
@@ -1491,6 +1535,17 @@ export const zhHans: Translations = {
     basicPlan: '入门版',
     proPlan: '专业版',
     enterprisePlan: '企业版'
+  },
+  about: {
+    title: '关于我们',
+    subtitle: '',
+    section1Body: '艺气股份有限公司 ARTSIE INC. 以成为「中文娱乐的整合者」为目标，打造下一个世代多元且有层次的娱乐场景。',
+    section2Body: '从现场喜剧、综艺节目到 DJ 派对，艺气与各领域的指标品牌缔结策略合作，一起扩大华语娱乐市场，让台湾成为中文娱乐的重要基地。',
+    section3Body: '同时，我们也专注于开发专属娱乐产业的后勤管理工具，例如报帐系统、合约管理系统、公关名单管理系统等，期望成为中文娱乐市场最可靠的后勤伙伴。'
+  },
+  terms: {
+    title: '隐私权政策',
+    subtitle: ''
   },
   enterpriseInquiry: {
     title: '联系我们了解企业方案',

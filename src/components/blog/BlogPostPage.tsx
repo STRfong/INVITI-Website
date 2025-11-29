@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { Locale, getTranslations } from '../../locales/translations';
 import { NavStack } from '../wireframe/NavStack';
 import { FooterSection } from '../wireframe/FooterSection';
 import { WireframeButton } from '../wireframe/WireframeButton';
+import { getBlogPostById, getAllBlogPosts, getMarkdownContent } from '../../utils/blogData';
+import { parseMarkdown } from '../../utils/markdownParser';
+import { useIsMobile } from '../ui/use-mobile';
 
 interface BlogPostPageProps {
   locale?: Locale;
@@ -17,69 +20,178 @@ interface BlogPostPageProps {
 
 export const BlogPostPage: React.FC<BlogPostPageProps> = ({ 
   locale = 'tc', 
-  isMobile = false,
+  isMobile: isMobileProp = false,
   onNavigate,
   onLocaleChange,
   onScrollToPricing,
   onSetScrollTarget
 }) => {
   const t = getTranslations(locale);
+  
+  // Auto-detect mobile using hook, use detected value as primary source
+  // Prop can override if explicitly set to true (for forced mobile view in dev)
+  const detectedMobile = useIsMobile();
+  const isMobile = isMobileProp === true ? true : detectedMobile;
 
-  // Mock post data
-  const post = {
-    title: 'First Block：專訪 XXX',
-    category: t.blogPage.caseStudies,
-    date: '2024-10-15',
-    readTime: `5 ${t.blogPage.readTime}`,
-    author: {
-      name: '林小明',
-      role: '產品經理',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100'
-    },
-    heroImage: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200',
-    content: `
-      <p>深入探討活動管理的未來趨勢，以及如何利用科技提升賓客體驗。我們與業界專家一起探討數位轉型的關鍵要素。</p>
+  // Debug: Log screen size detection (remove in production)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[BlogPostPage] Screen size detection:', {
+        windowWidth: window.innerWidth,
+        detectedMobile,
+        isMobileProp,
+        finalIsMobile: isMobile
+      });
+    }
+  }, [detectedMobile, isMobileProp, isMobile]);
+
+  // Get post ID from URL - update when URL changes
+  const [postId, setPostId] = useState(() => {
+    const path = window.location.pathname;
+    // Remove base path if exists
+    const basePath = '/INVITI-Website';
+    const normalizedPath = path.startsWith(basePath) 
+      ? path.slice(basePath.length) 
+      : path;
+    const match = normalizedPath.match(/\/blog\/(.+)/);
+    if (!match) return '';
+    
+    // Decode the ID from URL
+    const rawId = match[1];
+    try {
+      return decodeURIComponent(rawId);
+    } catch (e) {
+      return rawId;
+    }
+  });
+
+  // Listen for URL changes
+  useEffect(() => {
+    const updatePostId = () => {
+      const path = window.location.pathname;
+      const basePath = '/INVITI-Website';
+      const normalizedPath = path.startsWith(basePath) 
+        ? path.slice(basePath.length) 
+        : path;
+      const match = normalizedPath.match(/\/blog\/(.+)/);
+      if (!match) {
+        setPostId('');
+        return;
+      }
       
-      <h2>數位化轉型的必要性</h2>
-      <p>在當今快節奏的商業環境中，活動管理已經從傳統的紙本作業轉向全面數位化。這不僅提升了效率，更重要的是能夠提供更好的賓客體驗。</p>
-      
-      <h3>關鍵挑戰</h3>
-      <ul>
-        <li>如何有效管理大量賓客資料</li>
-        <li>即時追蹤 RSVP 狀態</li>
-        <li>確保邀請函的送達率</li>
-        <li>提供個人化的賓客體驗</li>
-      </ul>
-      
-      <blockquote>
-        「INVITI 幫助我們將活動管理流程從數週縮短到數天，讓我們能夠專注於創造更好的活動體驗。」
-        <br/><br/>
-        — 活動總監，某知名品牌
-      </blockquote>
-      
-      <h2>實際應用案例</h2>
-      <p>我們訪問了多位使用 INVITI 的活動主辦者，了解他們如何在實際工作中運用這些工具。以下是一些關鍵洞察：</p>
-      
-      <h3>自動化流程的價值</h3>
-      <p>透過自動化邀請發送與追蹤，團隊可以節省大量時間，並且確保不會遺漏任何重要的賓客。系統會自動記錄每一次互動，讓您隨時掌握最新狀態。</p>
-      
-      <h3>資料驅動的決策</h3>
-      <p>即時的儀表板與報告功能，讓您能夠快速做出資料驅動的決策。無論是調整邀請策略或是優化活動流程，都能基於實際數據進行。</p>
-      
-      <h2>未來展望</h2>
-      <p>隨著科技的進步，活動管理將會變得更加智慧化。AI 輔助、預測分析、個人化推薦等功能，都將成為標準配備。現在就開始數位轉型，為未來做好準備。</p>
-    `
+      const rawId = match[1];
+      try {
+        const decodedId = decodeURIComponent(rawId);
+        setPostId(decodedId);
+      } catch (e) {
+        setPostId(rawId);
+      }
+    };
+
+    // Listen for popstate (back/forward button)
+    window.addEventListener('popstate', updatePostId);
+    
+    // Use MutationObserver to detect when history changes (for programmatic navigation)
+    // This is a workaround since pushState doesn't trigger popstate
+    let lastPath = window.location.pathname;
+    const checkPath = () => {
+      const currentPath = window.location.pathname;
+      if (currentPath !== lastPath) {
+        lastPath = currentPath;
+        updatePostId();
+      }
+    };
+    
+    // Check periodically (fallback method)
+    const intervalId = setInterval(checkPath, 50);
+
+    return () => {
+      window.removeEventListener('popstate', updatePostId);
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  // Scroll to top when postId changes
+  useEffect(() => {
+    if (postId) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [postId]);
+
+  // Map category names from CSV to translation keys
+  const categoryMap: Record<string, string> = {
+    '產品更新': t.blogPage.productUpdates,
+    '客戶故事': t.blogPage.caseStudies,
+    '產業觀點': t.blogPage.industryInsights,
+    '活動花絮': t.blogPage.events,
   };
 
-  const prevPost = {
-    title: '產品更新：邀請追蹤改版',
-    id: '3'
-  };
+  // Get post data from CSV and markdown
+  const postData = useMemo(() => {
+    if (!postId) return null;
+    
+    const metadata = getBlogPostById(postId);
+    if (!metadata) return null;
 
-  const nextPost = {
-    title: '從展演到品牌：我們如何用 INVITI 管理百場活動',
-    id: '2'
-  };
+    const markdownContent = metadata.markdownPath ? getMarkdownContent(metadata.markdownPath) : '';
+    if (!markdownContent) return null;
+
+    const parsed = parseMarkdown(markdownContent);
+    
+    // Default hero image
+    const heroImages = [
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200',
+      'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200',
+      'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200',
+    ];
+    const heroImage = heroImages[Math.floor(Math.random() * heroImages.length)];
+
+    return {
+      id: metadata.id,
+      title: metadata.title,
+      category: categoryMap[metadata.category] || metadata.category,
+      date: metadata.date,
+      readTime: `${metadata.readTime} ${t.blogPage.readTime}`,
+      author: {
+        name: metadata.author || 'INVITI 團隊',
+        role: '產品與營運',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100'
+      },
+      heroImage,
+      content: parsed.content
+    };
+  }, [postId, t, categoryMap]);
+
+  // Get previous and next posts
+  const { prevPost, nextPost } = useMemo(() => {
+    const allPosts = getAllBlogPosts();
+    const currentIndex = allPosts.findIndex(p => p.id === postId);
+    
+    const prev = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+    const next = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+    
+    return {
+      prevPost: prev ? { id: prev.id, title: prev.title } : null,
+      nextPost: next ? { id: next.id, title: next.title } : null
+    };
+  }, [postId]);
+
+  // If post not found, show error or redirect
+  if (!postData) {
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+        <p className="text-gray-600">文章未找到</p>
+        <button
+          onClick={() => onNavigate?.('/blog')}
+          className="mt-4 text-sm text-gray-900 hover:text-gray-700"
+        >
+          返回部落格
+        </button>
+      </div>
+    );
+  }
+
+  const post = postData;
 
   const handleNavigateToHelpCenter = () => {
     if (onNavigate) {
@@ -101,25 +213,25 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
       />
 
       {/* Main Content */}
-      <main className={isMobile ? 'flex-1 pt-[120px]' : 'flex-1 pt-[112px]'}>
+      <main className={isMobile ? 'flex-1 pt-2' : 'flex-1 pt-8'}>
         {/* Back to Blog */}
-        <div className={`border-b border-gray-200 ${isMobile ? 'py-4 px-6' : 'py-6'}`}>
+        <div className={`border-b border-gray-200 ${isMobile ? 'py-3 px-4' : 'py-6'}`}>
           <div className={`${isMobile ? '' : 'max-w-[800px] mx-auto px-6'}`}>
             <button
               onClick={() => onNavigate?.('/blog')}
-              className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors active:opacity-70"
             >
-              <ArrowLeft size={16} />
-              {t.blogPage.backToBlog}
+              <ArrowLeft size={isMobile ? 12 : 16} />
+              <span className="text-sm sm:text-base">{t.blogPage.backToBlog}</span>
             </button>
           </div>
         </div>
 
         {/* Article */}
-        <article className={isMobile ? 'py-8' : 'py-12'}>
-          <div className={`${isMobile ? 'px-6' : 'max-w-[800px] mx-auto px-6'}`}>
+        <article className={isMobile ? 'py-6' : 'py-12'}>
+          <div className={`${isMobile ? 'px-4' : 'max-w-[800px] mx-auto px-6'}`}>
             {/* Meta Row */}
-            <div className="flex items-center gap-2 text-xs text-gray-500 mb-4">
+            <div className={`flex items-center gap-2 text-xs text-gray-500 mb-3 ${isMobile ? 'flex-wrap' : ''}`}>
               <span className="px-2 py-1 bg-gray-50 border border-gray-200" style={{ borderRadius: '4px' }}>
                 {post.category}
               </span>
@@ -130,25 +242,33 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
             </div>
 
             {/* Title */}
-            <h1 className="mb-6">{post.title}</h1>
+            <h1 className={isMobile ? 'mb-4 text-2xl leading-tight' : 'mb-6'}>{post.title}</h1>
 
             {/* Author Row */}
-            <div className="flex items-center gap-3 mb-8 pb-8 border-b border-gray-200">
-              <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-gray-100">
-                <ImageWithFallback
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            <div className={`flex items-center gap-3 mb-6 pb-6 ${isMobile ? '' : 'my-8'}`}>
+              <div 
+                className="rounded-full overflow-hidden flex-shrink-0 bg-gray-100"
+                style={{
+                  width: isMobile ? '40px' : '48px',
+                  height: isMobile ? '40px' : '48px',
+                  minWidth: isMobile ? '40px' : '48px',
+                  minHeight: isMobile ? '40px' : '48px',
+                  backgroundImage: `url(${post.author.avatar})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+                role="img"
+                aria-label={post.author.name}
+              />
               <div>
-                <div className="text-sm text-gray-900">{post.author.name}</div>
-                <div className="text-xs text-gray-500">{post.author.role}</div>
+                <div className={`text-gray-900 ${isMobile ? 'text-xs' : 'text-sm'}`}>{post.author.name}</div>
+                <div className={`text-gray-500 ${isMobile ? 'text-[10px]' : 'text-xs'}`}>{post.author.role}</div>
               </div>
             </div>
 
             {/* Hero Image */}
-            <div className="mb-8 overflow-hidden" style={{ borderRadius: '8px' }}>
+            <div className={`overflow-hidden ${isMobile ? 'mb-6 -mx-4' : 'mb-8'}`} style={{ borderRadius: isMobile ? '0' : '8px' }}>
               <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                 <ImageWithFallback
                   src={post.heroImage}
@@ -160,26 +280,32 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
 
             {/* Content */}
             <div 
-              className="prose prose-gray max-w-none blog-content"
+              className={`prose prose-gray max-w-none blog-content ${isMobile ? 'prose-sm' : ''}`}
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </div>
         </article>
 
         {/* Prev/Next Navigation */}
-        <div className={`border-t-2 border-gray-200 bg-gray-50 ${isMobile ? 'py-6 px-6' : 'py-8'}`}>
+        <div className={`border-t-2 border-gray-200 bg-gray-50 ${isMobile ? 'py-4 px-4' : 'py-8'}`}>
           <div className={`${isMobile ? '' : 'max-w-[800px] mx-auto px-6'}`}>
-            <div className={`flex ${isMobile ? 'flex-col gap-4' : 'justify-between items-center gap-6'}`}>
+            <div className={`flex ${isMobile ? 'flex-col gap-3' : 'justify-between items-center gap-6'}`}>
               {/* Previous Post */}
               {prevPost ? (
                 <button
-                  onClick={() => onNavigate?.(`/blog/${prevPost.id}`)}
-                  className="flex items-center gap-3 text-left flex-1 group"
+                  onClick={() => {
+                    const newPath = `/blog/${encodeURIComponent(prevPost.id)}`;
+                    onNavigate?.(newPath);
+                    // Force update postId immediately
+                    setPostId(prevPost.id);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`flex items-center gap-3 text-left flex-1 group ${isMobile ? 'active:opacity-70' : ''}`}
                 >
-                  <ArrowLeft size={20} className="text-gray-400 group-hover:text-gray-600 transition-colors flex-shrink-0" />
+                  <ArrowLeft size={isMobile ? 18 : 20} className="text-gray-400 group-hover:text-gray-600 transition-colors flex-shrink-0" />
                   <div className="min-w-0">
-                    <div className="text-xs text-gray-500 mb-1">{t.blogPage.previousPost}</div>
-                    <div className="text-sm text-gray-900 group-hover:text-gray-700 transition-colors truncate">
+                    <div className={`text-gray-500 mb-1 ${isMobile ? 'text-[10px]' : 'text-xs'}`}>{t.blogPage.previousPost}</div>
+                    <div className={`text-gray-900 group-hover:text-gray-700 transition-colors truncate ${isMobile ? 'text-xs' : 'text-sm'}`}>
                       {prevPost.title}
                     </div>
                   </div>
@@ -191,16 +317,22 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
               {/* Next Post */}
               {nextPost ? (
                 <button
-                  onClick={() => onNavigate?.(`/blog/${nextPost.id}`)}
-                  className="flex items-center gap-3 text-right flex-1 group justify-end"
+                  onClick={() => {
+                    const newPath = `/blog/${encodeURIComponent(nextPost.id)}`;
+                    onNavigate?.(newPath);
+                    // Force update postId immediately
+                    setPostId(nextPost.id);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`flex items-center gap-3 text-right flex-1 group justify-end ${isMobile ? 'active:opacity-70' : ''}`}
                 >
                   <div className="min-w-0">
-                    <div className="text-xs text-gray-500 mb-1">{t.blogPage.nextPost}</div>
-                    <div className="text-sm text-gray-900 group-hover:text-gray-700 transition-colors truncate">
+                    <div className={`text-gray-500 mb-1 ${isMobile ? 'text-[10px]' : 'text-xs'}`}>{t.blogPage.nextPost}</div>
+                    <div className={`text-gray-900 group-hover:text-gray-700 transition-colors truncate ${isMobile ? 'text-xs' : 'text-sm'}`}>
                       {nextPost.title}
                     </div>
                   </div>
-                  <ArrowRight size={20} className="text-gray-400 group-hover:text-gray-600 transition-colors flex-shrink-0" />
+                  <ArrowRight size={isMobile ? 18 : 20} className="text-gray-400 group-hover:text-gray-600 transition-colors flex-shrink-0" />
                 </button>
               ) : (
                 <div className="flex-1" />
@@ -216,7 +348,6 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
         isMobile={isMobile}
         onNavigate={onNavigate}
         onNavigateToHelpCenter={handleNavigateToHelpCenter}
-        onScrollToPricing={onScrollToPricing}
       />
     </div>
   );

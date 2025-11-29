@@ -3,7 +3,7 @@ import { WireframeButton } from './WireframeButton';
 import { NavStack } from './NavStack';
 import { FooterSection } from './FooterSection';
 import { Locale, getTranslations } from '../../locales/translations';
-import { Calendar, MessageSquare, Settings, CheckCircle2, Clock, Shield } from 'lucide-react';
+import { Settings, MessageSquare, Calendar } from 'lucide-react';
 
 interface DemoBookingPageProps {
   isMobile?: boolean;
@@ -54,12 +54,6 @@ export const DemoBookingPage: React.FC<DemoBookingPageProps> = ({
     },
   ];
 
-  const benefits = [
-    t.demoBooking.get1,
-    t.demoBooking.get2,
-    t.demoBooking.get3,
-  ];
-
   if (isMobile) {
     return (
       <div className="min-h-screen bg-white">
@@ -85,10 +79,13 @@ export const DemoBookingPage: React.FC<DemoBookingPageProps> = ({
             >
               {t.demoBooking.ctaButton}
             </WireframeButton>
+            <p className="text-sm text-gray-500 text-center leading-[150%]">
+              {t.demoBooking.fallbackEmail}
+            </p>
           </div>
         </section>
 
-        {/* What We'll Cover */}
+        {/* Meeting Content */}
         <section className="py-8 px-6">
           <div className="max-w-[343px] mx-auto space-y-4">
             <h3 className="leading-[140%]">{t.demoBooking.coverTitle}</h3>
@@ -114,67 +111,11 @@ export const DemoBookingPage: React.FC<DemoBookingPageProps> = ({
           </div>
         </section>
 
-        {/* Agenda */}
-        <section className="py-8 px-6 bg-gray-50">
-          <div className="max-w-[343px] mx-auto space-y-4">
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-gray-600" />
-              <h3 className="leading-[140%]">{t.demoBooking.agendaTitle}</h3>
-            </div>
-            <div className="p-4 bg-white border border-gray-200 rounded-lg">
-              <p className="text-sm text-gray-600 leading-[160%]">{t.demoBooking.agendaTimeline}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* What You'll Get */}
-        <section className="py-8 px-6">
-          <div className="max-w-[343px] mx-auto space-y-4">
-            <h3 className="leading-[140%]">{t.demoBooking.getTitle}</h3>
-            <div className="space-y-3">
-              {benefits.map((benefit, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-gray-600 leading-[150%]">{benefit}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Privacy Note */}
-        <section className="py-6 px-6 bg-gray-50">
-          <div className="max-w-[343px] mx-auto">
-            <div className="flex items-start gap-3 p-4 bg-white border border-gray-200 rounded-lg">
-              <Shield className="w-5 h-5 text-gray-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-gray-600 leading-[150%]">{t.demoBooking.privacyNote}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Bottom CTA */}
-        <section className="py-8 px-6 border-t border-gray-200">
-          <div className="max-w-[343px] mx-auto space-y-4">
-            <h3 className="leading-[140%]">{t.demoBooking.bookingTitle}</h3>
-            <WireframeButton 
-              variant="primary" 
-              className="w-full"
-              onClick={handleBooking}
-            >
-              {t.demoBooking.ctaButton}
-            </WireframeButton>
-            <p className="text-sm text-gray-500 text-center leading-[150%]">
-              {t.demoBooking.fallbackEmail}
-            </p>
-          </div>
-        </section>
-
         <FooterSection
           isMobile={isMobile}
           locale={locale}
           onNavigate={onNavigate}
           onNavigateToHelpCenter={handleNavigateToHelpCenter}
-          onScrollToPricing={onScrollToPricing}
         />
       </div>
     );
@@ -209,14 +150,17 @@ export const DemoBookingPage: React.FC<DemoBookingPageProps> = ({
               {t.demoBooking.ctaButton}
             </WireframeButton>
           </div>
+          <p className="text-sm text-gray-500 leading-[150%]">
+            {t.demoBooking.fallbackEmail}
+          </p>
         </div>
       </section>
 
-      {/* What We'll Cover */}
+      {/* Meeting Content */}
       <section className="py-16 px-20">
         <div className="max-w-[1120px] mx-auto space-y-8">
           <h2 className="text-center leading-[140%]">{t.demoBooking.coverTitle}</h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6 pt-4">
             {coverCards.map((card, index) => {
               const Icon = card.icon;
               return (
@@ -238,70 +182,11 @@ export const DemoBookingPage: React.FC<DemoBookingPageProps> = ({
         </div>
       </section>
 
-      {/* Agenda */}
-      <section className="py-16 px-20 bg-gray-50">
-        <div className="max-w-[960px] mx-auto space-y-6">
-          <div className="flex items-center justify-center gap-3">
-            <Clock className="w-6 h-6 text-gray-600" />
-            <h2 className="leading-[140%]">{t.demoBooking.agendaTitle}</h2>
-          </div>
-          <div className="p-6 bg-white border border-gray-200 rounded-lg">
-            <p className="text-center text-gray-600 leading-[160%]">{t.demoBooking.agendaTimeline}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* What You'll Get */}
-      <section className="py-16 px-20">
-        <div className="max-w-[960px] mx-auto space-y-8">
-          <h2 className="text-center leading-[140%]">{t.demoBooking.getTitle}</h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {benefits.map((benefit, index) => (
-              <div 
-                key={index} 
-                className="flex flex-col items-center text-center gap-3 p-6 bg-gray-50 border border-gray-200 rounded-lg"
-              >
-                <CheckCircle2 className="w-6 h-6 text-gray-600" />
-                <p className="text-gray-600 leading-[150%]">{benefit}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Privacy Note */}
-      <section className="py-12 px-20 bg-gray-50 border-t border-gray-200">
-        <div className="max-w-[960px] mx-auto">
-          <div className="flex items-center justify-center gap-4 p-6 bg-white border border-gray-200 rounded-lg">
-            <Shield className="w-6 h-6 text-gray-600 flex-shrink-0" />
-            <p className="text-gray-600 leading-[150%]">{t.demoBooking.privacyNote}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Bottom CTA */}
-      <section className="py-16 px-20 border-t border-gray-200">
-        <div className="max-w-[720px] mx-auto text-center space-y-6">
-          <h2 className="leading-[140%]">{t.demoBooking.bookingTitle}</h2>
-          <WireframeButton 
-            variant="primary" 
-            className="min-w-[280px]"
-            onClick={handleBooking}
-          >
-            {t.demoBooking.ctaButton}
-          </WireframeButton>
-          <p className="text-sm text-gray-500 leading-[150%]">
-            {t.demoBooking.fallbackEmail}
-          </p>
-        </div>
-      </section>
-
       <FooterSection
         isMobile={isMobile}
         locale={locale}
         onNavigate={onNavigate}
         onNavigateToHelpCenter={handleNavigateToHelpCenter}
-        onScrollToPricing={onScrollToPricing}
       />
     </div>
   );

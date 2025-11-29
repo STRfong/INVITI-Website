@@ -1,6 +1,8 @@
-import React from 'react';
-import { WireframeCard } from './WireframeCard';
+import React, { useMemo } from 'react';
+import { BlogCard, BlogCardProps } from '../blog/BlogCard';
 import { Locale, getTranslations } from '../../locales/translations';
+import { getAllBlogPosts, getMarkdownContent } from '../../utils/blogData';
+import { parseMarkdown } from '../../utils/markdownParser';
 
 interface BlogSectionProps {
   isMobile?: boolean;
@@ -10,23 +12,74 @@ interface BlogSectionProps {
 
 export const BlogSection: React.FC<BlogSectionProps> = ({ isMobile = false, locale = 'tc', onNavigate }) => {
   const t = getTranslations(locale);
-  const posts = [
-    {
-      meta: t.blog.post1Meta,
-      title: t.blog.post1Title,
-      description: t.blog.post1Description
-    },
-    {
-      meta: t.blog.post2Meta,
-      title: t.blog.post2Title,
-      description: t.blog.post2Description
-    },
-    {
-      meta: t.blog.post3Meta,
-      title: t.blog.post3Title,
-      description: t.blog.post3Description
+
+  // Map category names from CSV to translation keys
+  const categoryMap: Record<string, string> = {
+    '產品更新': t.blogPage.productUpdates,
+    '客戶故事': t.blogPage.caseStudies,
+    '產業觀點': t.blogPage.industryInsights,
+    '活動花絮': t.blogPage.events,
+  };
+
+  // Get latest 3 blog posts with same processing as BlogPage
+  const latestPosts: BlogCardProps[] = useMemo(() => {
+    const allPosts = getAllBlogPosts();
+    
+    // Sort by date (newest first) - assuming date format is YYYY-MM-DD or similar
+    const sortedPosts = [...allPosts].sort((a, b) => {
+      const dateA = new Date(a.date || '').getTime();
+      const dateB = new Date(b.date || '').getTime();
+      return dateB - dateA; // Descending order (newest first)
+    });
+    
+    // Get latest 3 posts
+    const latest3 = sortedPosts.slice(0, 3);
+    
+    // Default thumbnails (same as BlogPage)
+    const thumbnails = [
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
+      'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
+      'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800',
+      'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800',
+      'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800',
+      'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800',
+    ];
+    
+    return latest3.map((post, index) => {
+      // Get markdown content to extract excerpt
+      const markdownContent = post.markdownPath ? getMarkdownContent(post.markdownPath) : '';
+      const parsed = markdownContent ? parseMarkdown(markdownContent) : null;
+      
+      const thumbnail = thumbnails[index % thumbnails.length];
+      
+      // Parse author name and role
+      const authorName = post.author || 'INVITI 團隊';
+      const authorRole = '產品與營運'; // Default role, can be extracted from markdown if needed
+      
+      return {
+        id: post.id,
+        thumbnail,
+        title: post.title,
+        excerpt: parsed?.excerpt || '閱讀完整文章...',
+        category: categoryMap[post.category] || post.category,
+        date: post.date,
+        author: {
+          name: authorName,
+          role: authorRole,
+          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100'
+        },
+        readTime: `${post.readTime} ${t.blogPage.readTime}`,
+      };
+    });
+  }, [t, categoryMap]);
+
+  const handlePostClick = (postId: string) => {
+    if (onNavigate) {
+      // Encode the postId for URL (handles Chinese characters)
+      const encodedId = encodeURIComponent(postId);
+      onNavigate(`/blog/${encodedId}`);
     }
-  ];
+  };
 
   return (
     <section id="blog" className="section-padding bg-white">
@@ -44,20 +97,12 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ isMobile = false, loca
         </div>
 
         <div className={`row g-4 ${isMobile ? '' : 'row-cols-1 row-cols-md-3'}`}>
-          {posts.map((post, index) => (
+          {latestPosts.map((post) => (
             <div 
-              key={index}
+              key={post.id}
               className={isMobile ? '' : 'col'}
-              onClick={() => onNavigate?.('/blog')}
             >
-              <WireframeCard
-                image="placeholder"
-                meta={post.meta}
-                title={post.title}
-                description={post.description}
-                hover
-                isMobile={isMobile}
-              />
+              <BlogCard {...post} onClick={() => handlePostClick(post.id)} />
             </div>
           ))}
         </div>

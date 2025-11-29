@@ -1,9 +1,10 @@
 
-  import { defineConfig } from 'vite';
-  import react from '@vitejs/plugin-react-swc';
-  import path from 'path';
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
 
-  export default defineConfig({
+export default defineConfig({
+  // base: '/INVITI-Website/',
     plugins: [react()],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
@@ -55,6 +56,7 @@
     },
     server: {
       port: 3000,
+      host: true, // Expose server to network
       open: true,
     },
   });

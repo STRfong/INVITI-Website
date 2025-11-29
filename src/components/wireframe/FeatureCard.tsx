@@ -29,8 +29,11 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
 
   const handleCardClick = (e: React.MouseEvent) => {
     if (disabled) return;
-    // Don't trigger card click if clicking on screenshot
-    if ((e.target as HTMLElement).closest('.screenshot-container')) {
+    // If a custom screenshot click handler exists, avoid triggering card click from screenshot region
+    if (
+      onScreenshotClick &&
+      (e.target as HTMLElement).closest('.screenshot-container')
+    ) {
       return;
     }
     onClick?.();
@@ -56,8 +59,8 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
         {/* Screenshot - Fixed 16:9 Ratio */}
         {screenshot && (
           <div 
-            className="screenshot-container position-relative mb-3 bg-light border rounded overflow-hidden cursor-zoom-in flex-shrink-0"
-            onClick={handleScreenshotClick}
+            className="screenshot-container position-relative mb-3 bg-light border rounded overflow-hidden flex-shrink-0 cursor-pointer"
+            onClick={onScreenshotClick ? handleScreenshotClick : undefined}
             onMouseEnter={() => setIsHoveringImage(true)}
             onMouseLeave={() => setIsHoveringImage(false)}
             style={{
@@ -74,24 +77,26 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
               }}
             />
             
-            {/* Zoom Icon Overlay */}
-            <div 
-              className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-              style={{ 
-                backgroundColor: isHoveringImage ? 'rgba(0,0,0,0.2)' : 'transparent',
-                transition: 'background-color 0.2s'
-              }}
-            >
+            {onScreenshotClick && (
+              // Zoom Icon Overlay (only when screenshot click is enabled)
               <div 
-                className="bg-white rounded-circle p-2 shadow transition-all"
-                style={{
-                  opacity: isHoveringImage ? 1 : 0,
-                  transform: isHoveringImage ? 'scale(1)' : 'scale(0.9)'
+                className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                style={{ 
+                  backgroundColor: isHoveringImage ? 'rgba(0,0,0,0.2)' : 'transparent',
+                  transition: 'background-color 0.2s'
                 }}
               >
-                <ZoomIn size={20} className="text-dark" />
+                <div 
+                  className="bg-white rounded-circle p-2 shadow transition-all"
+                  style={{
+                    opacity: isHoveringImage ? 1 : 0,
+                    transform: isHoveringImage ? 'scale(1)' : 'scale(0.9)'
+                  }}
+                >
+                  <ZoomIn size={20} className="text-dark" />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 

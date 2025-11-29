@@ -7,51 +7,15 @@ interface FooterSectionProps {
   locale?: Locale;
   onNavigate?: (path: string) => void;
   onNavigateToHelpCenter?: () => void;
-  onScrollToPricing?: (focusCard?: 'free' | 'basic' | 'pro' | 'enterprise') => void;
 }
 
 export const FooterSection: React.FC<FooterSectionProps> = ({ 
   isMobile = false, 
   locale = 'tc',
   onNavigate,
-  onNavigateToHelpCenter,
-  onScrollToPricing
+  onNavigateToHelpCenter
 }) => {
   const t = getTranslations(locale);
-
-  const handlePricingClick = (focusCard?: 'free' | 'basic' | 'pro' | 'enterprise') => {
-    if (onScrollToPricing) {
-      onScrollToPricing(focusCard);
-    } else {
-      const pricingSection = document.getElementById('pricing');
-      if (pricingSection) {
-        const navHeight = 64;
-        const bannerHeight = isMobile ? 56 : 48;
-        const isBannerDismissed = localStorage.getItem('banner-dismissed') === 'true';
-        const totalNavHeight = isBannerDismissed ? navHeight : navHeight + bannerHeight;
-        
-        const elementPosition = pricingSection.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - totalNavHeight;
-        
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
-
-        if (focusCard) {
-          setTimeout(() => {
-            const cardElement = document.querySelector(`[data-pricing-card="${focusCard}"]`);
-            if (cardElement) {
-              cardElement.classList.add('pricing-card-highlight');
-              setTimeout(() => {
-                cardElement.classList.remove('pricing-card-highlight');
-              }, 1500);
-            }
-          }, 300);
-        }
-      }
-    }
-  };
 
   const handleHomeClick = () => {
     if (onNavigate) {
@@ -99,12 +63,18 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
               <div className="col-12 col-md-4">
                 <h6 className="text-white mb-3 fw-bold">{t.footer.company}</h6>
                 <div className="d-flex flex-column gap-2">
-                  <a href="#about" className="text-white-50 text-decoration-none small">
+                  <button
+                    onClick={() => onNavigate?.('/about')}
+                    className="text-white-50 text-decoration-none small text-start bg-transparent border-0 p-0"
+                  >
                     {t.footer.aboutUs}
-                  </a>
-                  <a href="#terms" className="text-white-50 text-decoration-none small">
+                  </button>
+                  <button
+                    onClick={() => onNavigate?.('/terms')}
+                    className="text-white-50 text-decoration-none small text-start bg-transparent border-0 p-0"
+                  >
                     {t.footer.termsAndPrivacy}
-                  </a>
+                  </button>
                 </div>
               </div>
 
@@ -115,9 +85,6 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
                   <button onClick={onNavigateToHelpCenter} className="text-white-50 text-decoration-none small text-left">
                     {t.footer.helpCenter}
                   </button>
-                  <button onClick={() => handlePricingClick()} className="text-white-50 text-decoration-none small text-left">
-                    {t.footer.pricing}
-                  </button>
                   <button onClick={() => onNavigate?.('/blog')} className="text-white-50 text-decoration-none small text-left">
                     {t.footer.blog}
                   </button>
@@ -127,16 +94,10 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
               {/* Column 3: INVITI For */}
               <div className="col-12 col-md-4">
                 <h6 className="text-white mb-3 fw-bold">{t.footer.invitiFor}</h6>
-                <div className="d-flex flex-column gap-2">
-                  <button onClick={() => handlePricingClick('enterprise')} className="text-white-50 text-decoration-none small text-left">
-                    {t.footer.enterprise}
-                  </button>
-                  <button onClick={() => handlePricingClick('pro')} className="text-white-50 text-decoration-none small text-left">
-                    {t.footer.teams}
-                  </button>
-                  <button onClick={() => handlePricingClick('basic')} className="text-white-50 text-decoration-none small text-left">
-                    {t.footer.individuals}
-                  </button>
+                <div className="d-flex flex-column gap-2 text-white-50 small">
+                  <span>{t.footer.enterprise}</span>
+                  <span>{t.footer.teams}</span>
+                  <span className="mb-0">{t.footer.individuals}</span>
                 </div>
               </div>
             </div>

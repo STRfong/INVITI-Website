@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
-import { Search, ChevronDown } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { BlogCard, BlogCardProps } from './BlogCard';
 import { Locale, getTranslations } from '../../locales/translations';
 import { NavStack } from '../wireframe/NavStack';
 import { FooterSection } from '../wireframe/FooterSection';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
+import { ImageWithFallback } from '../figma/ImageWithFallback';
+import { getAllBlogPosts, findMarkdownByTitle, getMarkdownContent } from '../../utils/blogData';
+import { parseMarkdown } from '../../utils/markdownParser';
+import { useIsMobile } from '../ui/use-mobile';
+import deadImage from '../../assets/dead.webp';
 
 interface BlogPageProps {
   locale?: Locale;
@@ -17,15 +22,32 @@ interface BlogPageProps {
 
 export const BlogPage: React.FC<BlogPageProps> = ({ 
   locale = 'tc', 
-  isMobile = false,
+  isMobile: isMobileProp = false,
   onNavigate,
   onLocaleChange,
   onScrollToPricing,
   onSetScrollTarget
 }) => {
   const t = getTranslations(locale);
+  // Auto-detect mobile using hook, use detected value as primary source
+  // Prop can override if explicitly set to true (for forced mobile view in dev)
+  const detectedMobile = useIsMobile();
+  const isMobile = isMobileProp === true ? true : detectedMobile;
+  
   const [activeCategory, setActiveCategory] = useState('all');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Debug: Log screen size detection (remove in production)
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[BlogPage] Screen size detection:', {
+        windowWidth: window.innerWidth,
+        detectedMobile,
+        isMobileProp,
+        finalIsMobile: isMobile
+      });
+    }
+  }, [detectedMobile, isMobileProp, isMobile]);
 
   const categories = [
     { id: 'all', label: t.blogPage.allPosts },
@@ -35,97 +57,90 @@ export const BlogPage: React.FC<BlogPageProps> = ({
     { id: 'events', label: t.blogPage.events }
   ];
 
-  // Mock blog posts
-  const blogPosts: BlogCardProps[] = [
-    {
-      id: '1',
-      thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
-      title: 'First Block：專訪 XXX',
-      excerpt: '深入探討活動管理的未來趨勢，以及如何利用科技提升賓客體驗。我們與業界專家一起探討數位轉型的關鍵要素...',
-      category: t.blogPage.caseStudies,
-      date: '2024-10-15',
-      author: {
-        name: '林小明',
-        role: '產品經理',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100'
-      },
-      readTime: `5 ${t.blogPage.readTime}`
-    },
-    {
-      id: '2',
-      thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
-      title: '從展演到品牌：我們如何用 INVITI 管理百場活動',
-      excerpt: '品牌活動的成功關鍵在於細節。分享我們如何透過 INVITI 平台管理複雜的多場次活動，提升效率與賓客滿意度...',
-      category: t.blogPage.caseStudies,
-      date: '2024-10-12',
-      author: {
-        name: '陳雅婷',
-        role: '活動總監',
-        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100'
-      },
-      readTime: `7 ${t.blogPage.readTime}`
-    },
-    {
-      id: '3',
-      thumbnail: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800',
-      title: '產品更新：邀請追蹤改版',
-      excerpt: '全新的邀請追蹤功能讓您能即時掌握每一封邀請函的狀態，包括開信率、點擊率與 RSVP 回覆...',
-      category: t.blogPage.productUpdates,
-      date: '2024-10-08',
-      author: {
-        name: '王大偉',
-        role: '工程師',
-        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100'
-      },
-      readTime: `4 ${t.blogPage.readTime}`
-    },
-    {
-      id: '4',
-      thumbnail: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800',
-      title: '產業觀點：PR 名單資料資產化',
-      excerpt: '在數位時代，賓客名單不再只是聯絡資訊的集合，而是企業最重要的資產之一。了解如何有效管理與運用...',
-      category: t.blogPage.industryInsights,
-      date: '2024-10-05',
-      author: {
-        name: '李思慧',
-        role: '內容策略師',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100'
-      },
-      readTime: `6 ${t.blogPage.readTime}`
-    },
-    {
-      id: '5',
-      thumbnail: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800',
-      title: '客戶故事：大型音樂節的邀請流程',
-      excerpt: '管理超過 5000 位賓客的音樂節邀請流程，看看他們如何運用 INVITI 簡化複雜的多場次管理...',
-      category: t.blogPage.caseStudies,
-      date: '2024-10-01',
-      author: {
-        name: '張志強',
-        role: '客戶成功經理',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100'
-      },
-      readTime: `8 ${t.blogPage.readTime}`
-    },
-    {
-      id: '6',
-      thumbnail: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800',
-      title: '活動花絮：封測回顧',
-      excerpt: '感謝所有參與 INVITI 封測的夥伴們！回顧這段旅程中的精彩時刻與寶貴反饋...',
-      category: t.blogPage.events,
-      date: '2024-09-28',
-      author: {
-        name: '黃美玲',
-        role: '社群經理',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'
-      },
-      readTime: `3 ${t.blogPage.readTime}`
+  // Map category names from CSV to translation keys
+  const categoryMap: Record<string, string> = {
+    '產品更新': t.blogPage.productUpdates,
+    '客戶故事': t.blogPage.caseStudies,
+    '產業觀點': t.blogPage.industryInsights,
+    '活動花絮': t.blogPage.events,
+  };
+
+  // Reverse map: from category ID to CSV category name
+  const categoryIdToCsvName: Record<string, string> = {
+    'product': '產品更新',
+    'case': '客戶故事',
+    'industry': '產業觀點',
+    'events': '活動花絮',
+  };
+
+  // Get blog posts from CSV and markdown files
+  const allBlogPosts: BlogCardProps[] = useMemo(() => {
+    const allPosts = getAllBlogPosts();
+    
+    return allPosts.map((post) => {
+      // Get markdown content to extract excerpt
+      const markdownContent = post.markdownPath ? getMarkdownContent(post.markdownPath) : '';
+      const parsed = markdownContent ? parseMarkdown(markdownContent) : null;
+      
+      // Default thumbnail (you can customize per post later)
+      const thumbnails = [
+        'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
+        'https://images.unsplash.com/photo-1519741497674-611481863552?w=800',
+        'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800',
+        'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800',
+        'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800',
+        'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800',
+      ];
+      const thumbnail = thumbnails[allPosts.indexOf(post) % thumbnails.length];
+      
+      // Parse author name and role
+      const authorName = post.author || 'INVITI 團隊';
+      const authorRole = '產品與營運'; // Default role, can be extracted from markdown if needed
+      
+      return {
+        id: post.id,
+        thumbnail,
+        title: post.title,
+        excerpt: parsed?.excerpt || '閱讀完整文章...',
+        category: categoryMap[post.category] || post.category,
+        date: post.date,
+        author: {
+          name: authorName,
+          role: authorRole,
+          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100'
+        },
+        readTime: `${post.readTime} ${t.blogPage.readTime}`,
+        // Store original CSV category for filtering
+        originalCategory: post.category
+      };
+    });
+  }, [t, categoryMap]);
+
+  // Filter blog posts based on active category
+  const blogPosts: BlogCardProps[] = useMemo(() => {
+    if (activeCategory === 'all') {
+      return allBlogPosts;
     }
-  ];
+    
+    // Get the CSV category name for the selected category ID
+    const csvCategoryName = categoryIdToCsvName[activeCategory];
+    if (!csvCategoryName) {
+      return allBlogPosts;
+    }
+    
+    // Filter posts that match the selected category
+    return allBlogPosts.filter((post): post is BlogCardProps => {
+      // Access the originalCategory we stored (using type assertion for internal use)
+      const postWithCategory = post as BlogCardProps & { originalCategory?: string };
+      return postWithCategory.originalCategory === csvCategoryName;
+    });
+  }, [allBlogPosts, activeCategory, categoryIdToCsvName]);
 
   const handlePostClick = (postId: string) => {
     if (onNavigate) {
-      onNavigate(`/blog/${postId}`);
+      // Encode the postId for URL (handles Chinese characters)
+      const encodedId = encodeURIComponent(postId);
+      onNavigate(`/blog/${encodedId}`);
     }
   };
 
@@ -149,7 +164,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           }}
           className={`w-full text-left px-3 py-2 text-sm transition-colors leading-[140%] ${
             activeCategory === category.id
-              ? 'bg-gray-100 text-gray-900'
+              ? 'bg-gray-100 text-gray-900 font-medium'
               : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
           }`}
           style={{ borderRadius: '4px' }}
@@ -174,48 +189,30 @@ export const BlogPage: React.FC<BlogPageProps> = ({
       />
 
       {/* Main Content */}
-      <main className={isMobile ? 'flex-1 pt-[120px]' : 'flex-1 pt-[112px]'}>
+      <main className={isMobile ? 'flex-1' : 'flex-1'}>
         {/* Hero Section */}
-        <div className={`border-b border-gray-200 bg-gray-50 ${isMobile ? 'py-8 px-6' : 'py-12'}`}>
+        <div className={`border-b border-gray-200 bg-gray-50 ${isMobile ? 'pt-12 pb-6 px-4' : 'py-12'}`}>
           <div className={`${isMobile ? '' : 'max-w-[1120px] mx-auto px-6'}`}>
-            <h1 className={`mb-3 ${isMobile ? 'text-left' : 'text-center'}`}>
+            <h1 className={`mb-2 ${isMobile ? 'text-left text-2xl' : 'text-center'}`}>
               {t.blogPage.title}
             </h1>
-            <p className={`text-gray-600 leading-[150%] ${isMobile ? 'text-left' : 'text-center'}`}>
+            <p className={`text-gray-600 leading-[150%] ${isMobile ? 'text-left text-sm' : 'text-center'}`}>
               {t.blogPage.subtitle}
             </p>
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className={`border-b border-gray-200 bg-white ${isMobile ? 'py-4 px-6' : 'py-6'}`}>
-          <div className={`${isMobile ? '' : 'max-w-[1120px] mx-auto px-6'}`}>
-            <div className="relative">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                size={20}
-              />
-              <input
-                type="text"
-                placeholder={t.blogPage.searchPlaceholder}
-                className="w-full h-12 pl-12 pr-4 border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-400 transition-colors leading-[140%]"
-                style={{ borderRadius: '6px' }}
-              />
-            </div>
-          </div>
-        </div>
-
         {/* Content Area */}
-        <div className={isMobile ? 'py-6' : 'py-12'}>
+        <div className={isMobile ? 'py-4' : 'py-12'}>
           <div className={`${isMobile ? '' : 'max-w-[1120px] mx-auto px-6'}`}>
             {isMobile ? (
               // Mobile: Collapsible Sidebar + Single Column Feed
               <div>
                 {/* Collapsible Sidebar */}
-                <div className="px-6 mb-6">
+                <div className="px-4 mb-4">
                   <Collapsible open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full p-3 border border-gray-200 bg-white">
-                      <span className="text-sm text-gray-900">
+                    <CollapsibleTrigger className="flex items-center justify-between w-full p-3 border border-gray-200 bg-white rounded-md">
+                      <span className="text-sm font-medium text-gray-900">
                         {categories.find(c => c.id === activeCategory)?.label}
                       </span>
                       <ChevronDown
@@ -225,19 +222,34 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                         }`}
                       />
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-2 p-3 border border-gray-200 bg-white">
+                    <CollapsibleContent className="mt-2 p-3 border border-gray-200 bg-white rounded-md">
                       <SidebarContent />
                     </CollapsibleContent>
                   </Collapsible>
                 </div>
 
                 {/* Single Column Feed */}
-                <div className="px-6 space-y-6">
-                  {blogPosts.map((post) => (
-                    <div key={post.id} style={{ width: '343px', maxWidth: '100%' }}>
-                      <BlogCard {...post} onClick={() => handlePostClick(post.id)} />
+                <div className="px-4 space-y-4">
+                  {blogPosts.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 px-4">
+                      <div className={`${isMobile ? 'w-14 h-auto' : 'w-12 h-auto'} mb-3`}>
+                        <ImageWithFallback
+                          src={deadImage}
+                          alt="Empty state"
+                          className="w-full h-auto object-contain"
+                        />
+                      </div>
+                      <p className="text-sm text-gray-500 text-center">
+                        此分類暫無文章
+                      </p>
                     </div>
-                  ))}
+                  ) : (
+                    blogPosts.map((post) => (
+                      <div key={post.id} className="w-full">
+                        <BlogCard {...post} onClick={() => handlePostClick(post.id)} />
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             ) : (
@@ -253,11 +265,26 @@ export const BlogPage: React.FC<BlogPageProps> = ({
 
                 {/* Main Feed - Two Columns */}
                 <div className="flex-1">
-                  <div className="grid grid-cols-2 gap-6">
-                    {blogPosts.map((post) => (
-                      <BlogCard key={post.id} {...post} onClick={() => handlePostClick(post.id)} />
-                    ))}
-                  </div>
+                  {blogPosts.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-24">
+                      <div className="w-12 h-12 mb-6">
+                        <ImageWithFallback
+                          src={deadImage}
+                          alt="Empty state"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <p className="text-base text-gray-500">
+                        此分類暫無文章
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-6">
+                      {blogPosts.map((post) => (
+                        <BlogCard key={post.id} {...post} onClick={() => handlePostClick(post.id)} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -271,7 +298,6 @@ export const BlogPage: React.FC<BlogPageProps> = ({
         isMobile={isMobile}
         onNavigate={onNavigate}
         onNavigateToHelpCenter={handleNavigateToHelpCenter}
-        onScrollToPricing={onScrollToPricing}
       />
     </div>
   );

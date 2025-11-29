@@ -20,15 +20,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isMobile = false, loca
               <h1 className="display-6 fw-medium">{t.hero.title}</h1>
               <p className="text-muted lead">{t.hero.subtitle}</p>
               <div className="d-flex flex-column flex-sm-row gap-3 pt-2">
-                <a href="https://app.inviti.vip" target="_blank" rel="noopener noreferrer" className="w-100">
-                  <WireframeButton variant="primary" className="w-100">
-                    {t.hero.tryForFree}
-                  </WireframeButton>
-                </a>
                 <WireframeButton 
-                  variant="secondary" 
+                  variant="primary" 
                   className="w-100"
-                  onClick={() => onNavigate?.('/demo-booking')}
+                  onClick={() => onNavigate?.('/booking')}
                 >
                   {t.hero.bookDemo}
                 </WireframeButton>

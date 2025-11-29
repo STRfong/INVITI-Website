@@ -99,7 +99,7 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
     { label: t.nav.home, url: '/', isExternal: false, action: handleHomeClick },
     { label: t.nav.features, url: '#features', isExternal: false, action: () => handleSmoothScroll('features') },
     { label: t.nav.blog, url: '/blog', isExternal: false, action: () => onNavigate?.('/blog') },
-    { label: t.nav.pricing, url: '#pricing', isExternal: false, action: () => handleSmoothScroll('pricing') },
+    // { label: t.nav.pricing, url: '#pricing', isExternal: false, action: () => handleSmoothScroll('pricing') },
     { label: t.nav.helpCenter, url: '#help-center', isExternal: false, action: onNavigateToHelpCenter }
   ];
 
@@ -163,11 +163,13 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
                     {t.nav.login}
                   </WireframeButton>
                 </a>
-                <a href="https://app.inviti.vip" target="_blank" rel="noopener noreferrer">
-                  <WireframeButton variant="primary" size="sm">
-                    {t.nav.tryForFree}
-                  </WireframeButton>
-                </a>
+                <WireframeButton 
+                  variant="primary" 
+                  size="sm"
+                  onClick={() => onNavigate?.('/booking')}
+                >
+                  {t.nav.tryForFree}
+                </WireframeButton>
               </div>
             </>
           )}
@@ -194,7 +196,7 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
                       item.action?.();
                       setMobileMenuOpen(false);
                     }}
-                    className="btn btn-link text-start text-dark"
+                    className="btn btn-link text-start text-dark text-decoration-none"
                   >
                     {item.label}
                   </button>
@@ -239,11 +241,17 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
                     {t.nav.login}
                   </WireframeButton>
                 </a>
-                <a href="https://app.inviti.vip" target="_blank" rel="noopener noreferrer" className="w-100">
-                  <WireframeButton variant="primary" size="sm" className="w-100">
-                    {t.nav.tryForFree}
-                  </WireframeButton>
-                </a>
+                <WireframeButton 
+                  variant="primary" 
+                  size="sm" 
+                  className="w-100"
+                  onClick={() => {
+                    onNavigate?.('/booking');
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  {t.nav.tryForFree}
+                </WireframeButton>
               </div>
             </div>
           </div>

@@ -30,7 +30,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer border border-gray-200 bg-white transition-all hover:border-gray-300 hover:shadow-sm"
+      className="group cursor-pointer border border-gray-200 bg-white transition-all hover:border-gray-300 hover:shadow-sm active:opacity-90"
       style={{ borderRadius: '8px' }}
     >
       {/* Thumbnail */}
@@ -45,43 +45,45 @@ export const BlogCard: React.FC<BlogCardProps> = ({
       </div>
 
       {/* Content */}
-      <div className="p-5">
+      <div className="p-4 sm:p-4">
         {/* Title */}
-        <h3 className="mb-2 leading-[140%] text-gray-900 group-hover:text-gray-700 transition-colors">
+        <h5 className="mb-2 leading-[140%] text-gray-900 group-hover:text-gray-700 transition-colors text-sm sm:text-base">
           {title}
-        </h3>
+        </h5>
 
         {/* Excerpt */}
-        <p className="text-sm text-gray-600 mb-4 leading-[150%] line-clamp-2">
+        <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 leading-[150%] line-clamp-2">
           {excerpt}
         </p>
 
         {/* Author Row */}
-        <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100">
+        <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3 pb-2 sm:pb-3 border-b border-gray-100">
           {author.avatar && (
-            <div
-              className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100"
-            >
-              <ImageWithFallback
-                src={author.avatar}
-                alt={author.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
+            <div 
+              className="blog-card-avatar bg-gray-100"
+              style={{
+                backgroundImage: `url(${author.avatar})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }}
+              role="img"
+              aria-label={author.name}
+            />
           )}
           {!author.avatar && (
-            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-              <span className="text-xs text-gray-600">{author.name[0]}</span>
+            <div className="blog-card-avatar bg-gray-200 flex items-center justify-center">
+              <span className="text-[10px] sm:text-xs text-gray-600">{author.name[0]}</span>
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <div className="text-sm text-gray-900 truncate">{author.name}</div>
+            <div className="text-xs sm:text-sm text-gray-900 truncate">{author.name}</div>
             <div className="text-xs text-gray-500 truncate">{author.role}</div>
           </div>
         </div>
 
         {/* Meta Row */}
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs text-gray-500 flex-wrap sm:flex-nowrap pt-1">
           <span className="px-2 py-1 bg-gray-50 border border-gray-200" style={{ borderRadius: '4px' }}>
             {category}
           </span>
