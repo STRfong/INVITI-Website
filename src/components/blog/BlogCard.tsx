@@ -30,7 +30,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer border border-gray-200 bg-white transition-all hover:border-gray-300 hover:shadow-sm active:opacity-90"
+      className="group cursor-pointer border border-gray-200 bg-white transition-all hover:border-gray-300 hover:shadow-sm active:opacity-90 flex flex-col h-full w-full"
       style={{ borderRadius: '8px' }}
     >
       {/* Thumbnail */}
@@ -48,7 +48,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
       )}
 
       {/* Content */}
-      <div className="p-4 sm:p-4">
+      <div className="p-4 sm:p-4 flex flex-col flex-grow">
         {/* Title */}
         <h5 className="mb-2 leading-[140%] text-gray-900 group-hover:text-gray-700 transition-colors text-sm sm:text-base">
           {title}
@@ -86,7 +86,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
         </div>
 
         {/* Meta Row */}
-        <div className="flex items-center gap-1.5 sm:gap-2 text-xs text-gray-500 flex-wrap sm:flex-nowrap pt-1">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs text-gray-500 flex-wrap sm:flex-nowrap pt-1 mt-auto">
           <span className="px-2 py-1 bg-gray-50 border border-gray-200" style={{ borderRadius: '4px' }}>
             {category}
           </span>

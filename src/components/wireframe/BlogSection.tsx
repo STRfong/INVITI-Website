@@ -3,6 +3,7 @@ import { BlogCard, BlogCardProps } from '../blog/BlogCard';
 import { Locale, getTranslations } from '../../locales/translations';
 import { getAllBlogPosts, getMarkdownContent } from '../../utils/blogData';
 import { parseMarkdown } from '../../utils/markdownParser';
+import invitLogo from '../../assets/INVITI_Logo.webp';
 
 interface BlogSectionProps {
   isMobile?: boolean;
@@ -66,7 +67,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ isMobile = false, loca
         author: {
           name: authorName,
           role: authorRole,
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100'
+          avatar: invitLogo
         },
         readTime: `${post.readTime} ${t.blogPage.readTime}`,
       };
@@ -100,7 +101,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ isMobile = false, loca
           {latestPosts.map((post) => (
             <div 
               key={post.id}
-              className={isMobile ? '' : 'col'}
+              className={isMobile ? '' : 'col d-flex'}
             >
               <BlogCard {...post} onClick={() => handlePostClick(post.id)} />
             </div>
