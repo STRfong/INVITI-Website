@@ -1,6 +1,7 @@
 import React from 'react';
 import { Locale, getTranslations } from '../../locales/translations';
 import logo from '../../assets/logo.webp';
+import logo_light from '../../assets/INVITI_Logo_Light.webp';
 
 interface FooterSectionProps {
   isMobile?: boolean;
@@ -35,25 +36,19 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
           
           {/* Logo Section */}
           <div className={`col-12 ${isMobile ? 'text-center mb-4' : 'col-lg-3 mb-0 d-flex justify-content-center'}`}>
-            <button 
-              onClick={handleHomeClick}
-              className="btn btn-link text-white p-0 border-0 focus-ring text-decoration-none opacity-hover d-flex justify-content-center"
-              style={{ transition: 'opacity 0.2s' }}
-            >
-              <img 
-                src={logo} 
-                alt="INVITI" 
-                style={{ 
-                  height: isMobile ? '48px' : '114px', 
-                  width: 'auto',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  filter: 'brightness(0) invert(1)'
-                }} 
-                className="img-fluid"
-              />
-            </button>
+            <img 
+              src={logo_light} 
+              alt="INVITI" 
+              style={{ 
+                height: isMobile ? '48px' : '114px', 
+                width: 'auto',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                filter: 'brightness(0) invert(1)'
+              }} 
+              className="img-fluid"
+            />
           </div>
 
           {/* Columns Container */}
