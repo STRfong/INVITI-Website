@@ -162,7 +162,7 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
                   />
                 </div>
                 
-                <a href="https://app.inviti.vip" target="_blank" rel="noopener noreferrer">
+                <a href="https://app.inviti.vip/login/" target="_blank" rel="noopener noreferrer">
                   <WireframeButton variant="secondary" size="sm">
                     {t.nav.login}
                   </WireframeButton>
