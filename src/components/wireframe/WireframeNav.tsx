@@ -240,7 +240,7 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
               </div>
               
               <div className="d-flex flex-column gap-2">
-                <a href="https://app.inviti.vip" target="_blank" rel="noopener noreferrer" className="w-100">
+                <a href="https://app.inviti.vip/login/" target="_blank" rel="noopener noreferrer" className="w-100">
                   <WireframeButton variant="secondary" size="sm" className="w-100">
                     {t.nav.login}
                   </WireframeButton>
