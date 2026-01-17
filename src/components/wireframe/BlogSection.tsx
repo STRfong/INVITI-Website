@@ -83,7 +83,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ isMobile = false, loca
   };
 
   return (
-    <section id="blog" className="section-padding bg-white">
+    <section id="blog" className="section-padding bg-background">
       <div className={isMobile ? 'container-fluid px-4' : 'container'}>
         <div className={`d-flex ${isMobile ? 'flex-column mb-4' : 'align-items-center justify-content-between mb-5'}`}>
           <h2 className={`mb-3 ${isMobile ? 'text-start' : 'mb-0'}`}>{t.blog.sectionTitle}</h2>

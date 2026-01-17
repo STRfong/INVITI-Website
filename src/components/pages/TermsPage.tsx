@@ -129,12 +129,12 @@ export const TermsPage: React.FC<TermsPageProps> = ({
             margin-bottom: 0;
           }
           .terms-content a {
-            color: #030213;
+            color: #2D3508;
             text-decoration: underline;
             transition: color 200ms;
           }
           .terms-content a:hover {
-            color: #525252;
+            color: #1A1F05;
           }
           .terms-content hr {
             border: none;

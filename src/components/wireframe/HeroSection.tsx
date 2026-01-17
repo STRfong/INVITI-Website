@@ -14,7 +14,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isMobile = false, loca
   const titleSecondLine = titleRestParts.join('，');
   
   return (
-    <section id="home" className="bg-white section-padding">
+    <section id="home" className="bg-background section-padding">
       <div className="container">
         <div className="row justify-content-center text-center">
           <div className="col-12 col-lg-8">

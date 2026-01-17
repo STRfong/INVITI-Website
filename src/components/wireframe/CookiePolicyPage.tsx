@@ -130,12 +130,12 @@ export const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({
             margin-bottom: 0;
           }
           .cookie-content a {
-            color: #030213;
+            color: #2D3508;
             text-decoration: underline;
             transition: color 200ms;
           }
           .cookie-content a:hover {
-            color: #525252;
+            color: #1A1F05;
           }
           .cookie-content hr {
             border: none;
