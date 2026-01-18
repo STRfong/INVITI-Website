@@ -18,8 +18,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isMobile = false, loca
     const featuresSection = document.getElementById('features');
     if (featuresSection) {
       const navHeight = 64;
+      const sectionPadding = 100;
       const elementPosition = featuresSection.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navHeight;
+      const offsetPosition = elementPosition + window.pageYOffset - navHeight + sectionPadding;
       window.scrollTo({
         top: offsetPosition,
         behavior: 'smooth'
@@ -43,14 +44,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isMobile = false, loca
                   </>
                 )}
               </h1>
-              <p className="text-muted lead">{t.hero.subtitle}</p>
+              <p 
+                className="lead"
+                style={{
+                  fontSize: '1.375rem',
+                  fontWeight: 400,
+                  color: '#2D3508ee',
+                  marginBottom: '0.5rem'
+                }}
+              >
+                {t.hero.subtitle}
+              </p>
               <div
                 className="d-flex flex-column flex-sm-row gap-3 pt-2 justify-content-center"
                 style={{ maxWidth: isMobile ? '100%' : '280px' }}
               >
                 <WireframeButton 
                   variant="primary" 
-                  className="w-100 w-sm-auto px-4"
+                  size="md"
+                  className="w-100 w-sm-auto"
                   onClick={() => onNavigate?.('/booking')}
                 >
                   {t.hero.bookDemo}
@@ -63,7 +75,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isMobile = false, loca
       
       {/* Scroll Down Arrow */}
       <div 
-        className="position-absolute bottom-0 start-50 translate-middle-x mb-4"
+        className="position-absolute bottom-0 start-50 translate-middle-x mb-4 pb-4"
         style={{ cursor: 'pointer' }}
         onClick={handleScrollDown}
         onKeyDown={(e) => {

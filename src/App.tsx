@@ -644,11 +644,6 @@ useEffect(() => {
                 onNavigate={handleNavigate}
                 locale={locale}
               />
-              {/* Crosswork Pattern Decoration */}
-              <div className="crosswork-pattern">
-                <span className="arrow-left">&gt;&gt;</span>
-                <span className="arrow-right">&lt;&lt;</span>
-              </div>
               <BlogSection 
                 isMobile={deviceView === 'mobile'} 
                 locale={locale}
