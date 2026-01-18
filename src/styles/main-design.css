@@ -41,9 +41,19 @@ body {
     background-color: #FFFCEB !important;
 }
 
-/* Ensure all sections use theme background */
-section {
-    background-color: #FFFCEB !important;
+/* Ensure all sections use theme background by default */
+section:not(#features) {
+    background-color: #FFFCEB;
+}
+
+/* Features section uses dark background */
+section#features {
+    background-color: #2D3508 !important;
+    color: #FFFCEB !important;
+}
+
+section#features * {
+    color: inherit;
 }
 
 /* Override Bootstrap text-dark to use theme color */
@@ -163,8 +173,87 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, label {
 
 @media (min-width: 768px) {
     .section-padding {
-        padding-top: 8rem;
-        padding-bottom: 8rem;
+        padding-top: 10rem;
+        padding-bottom: 12rem;
+    }
+}
+
+/* Feature Card Responsive Styles */
+@media (max-width: 991px) {
+    .feature-card-content,
+    .feature-card-content-fullwidth {
+        width: 100% !important;
+        flex: 0 1 auto !important;
+        max-width: 100% !important;
+    }
+    
+    .feature-card-image,
+    .feature-card-image-fullwidth {
+        width: 100% !important;
+        flex: 0 0 auto !important;
+        max-width: 100% !important;
+        order: 2;
+        min-height: 300px !important;
+    }
+    
+    .card-body.flex-column.flex-md-row {
+        flex-direction: column !important;
+    }
+    
+    /* Hide button completely on mobile/thin view (less than tablet) */
+    .feature-card-button {
+        display: none !important;
+    }
+    
+    /* Remove gap and adjust layout when button is hidden on mobile */
+    .feature-card-button-container-mobile {
+        gap: 0 !important;
+    }
+    
+    /* Make subtitle full width when button is hidden */
+    .feature-card-button-container-mobile .card-text {
+        flex-grow: 1 !important;
+        width: 100% !important;
+    }
+}
+
+@media (min-width: 992px) {
+    /* Full-width card: 3:7 ratio */
+    .feature-card-content-fullwidth {
+        flex: 0 0 30% !important;
+        max-width: 30% !important;
+        width: 30% !important;
+    }
+    
+    .feature-card-image-fullwidth {
+        flex: 0 0 70% !important;
+        max-width: 70% !important;
+        width: 70% !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .feature-card-content,
+    .feature-card-content-fullwidth {
+        order: 1;
+    }
+    
+    .feature-card-image,
+    .feature-card-image-fullwidth {
+        order: 2;
+    }
+    
+    /* Full-width card: 3:7 ratio */
+    .feature-card-content-fullwidth {
+        flex: 0 0 30% !important;
+        max-width: 30% !important;
+        width: 30% !important;
+    }
+    
+    .feature-card-image-fullwidth {
+        flex: 0 0 70% !important;
+        max-width: 70% !important;
+        width: 70% !important;
     }
 }
 
@@ -236,56 +325,6 @@ body {
 
 .scroll-down-arrow {
     animation: bounceDown 2s ease-in-out infinite;
-}
-
-/* Crosswork pattern */
-.crosswork-pattern {
-    position: relative;
-    width: 100%;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    background-color: var(--bs-body-bg);
-    padding: 20px 0;
-}
-
-.crosswork-pattern::before,
-.crosswork-pattern::after {
-    content: '';
-    position: absolute;
-    width: 150px;
-    height: 1.5px;
-    background-color: rgba(45, 53, 8, 0.2);
-}
-
-.crosswork-pattern::before {
-    transform: rotate(45deg);
-    left: 25%;
-}
-
-.crosswork-pattern::after {
-    transform: rotate(-45deg);
-    right: 25%;
-}
-
-.crosswork-pattern .arrow-left,
-.crosswork-pattern .arrow-right {
-    position: absolute;
-    font-size: 28px;
-    color: rgba(45, 53, 8, 0.25);
-    font-weight: 300;
-    letter-spacing: -2px;
-    z-index: 1;
-}
-
-.crosswork-pattern .arrow-left {
-    left: calc(50% - 50px);
-}
-
-.crosswork-pattern .arrow-right {
-    right: calc(50% - 50px);
 }
 
 /* Utility Helpers */
