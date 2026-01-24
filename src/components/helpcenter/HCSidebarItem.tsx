@@ -41,13 +41,13 @@ export const HCSidebarItem: React.FC<HCSidebarItemProps> = ({
         className="w-full flex items-center justify-between px-3 py-2 text-left text-sm transition-colors leading-[140%]"
         style={{
           backgroundColor: isActive ? '#2D3508' : 'transparent',
-          color: isActive ? '#FFFCEB' : '#2D3508',
+          color: isActive ? '#FDFDFD' : '#2D3508',
           opacity: isActive ? 1 : 0.8
         }}
         onMouseEnter={(e) => {
           if (!isActive) {
             e.currentTarget.style.backgroundColor = '#2D3508';
-            e.currentTarget.style.color = '#FFFCEB';
+            e.currentTarget.style.color = '#FDFDFD';
             e.currentTarget.style.opacity = '1';
           }
         }}
@@ -65,7 +65,7 @@ export const HCSidebarItem: React.FC<HCSidebarItemProps> = ({
             size={16} 
             className="transition-transform"
             style={{ 
-              color: isActive ? '#FFFCEB' : '#2D3508',
+              color: isActive ? '#FDFDFD' : '#2D3508',
               opacity: 0.7,
               transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'
             }}

@@ -170,7 +170,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
     <nav className="space-y-1">
       {categories.map((category) => {
         // For mobile (dark background), use light text; for desktop (light background), use dark text
-        const defaultTextColor = isDarkBackground ? '#FFFCEB' : '#2D3508';
+        const defaultTextColor = isDarkBackground ? '#FDFDFD' : '#2D3508';
         const hoverBgColor = isDarkBackground ? 'rgba(255, 252, 235, 0.1)' : 'rgba(45, 53, 8, 0.1)';
         
         return (
@@ -189,7 +189,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                 ? '#2D3508' 
                 : 'transparent',
               color: activeCategory === category.id 
-                ? '#FFFCEB' 
+                ? '#FDFDFD' 
                 : defaultTextColor,
               opacity: activeCategory === category.id ? 1 : 1,
               fontWeight: activeCategory === category.id ? 600 : 400,
@@ -220,7 +220,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
   );
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FFFCEB' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FDFDFD' }}>
       {/* Navigation Stack */}
       <NavStack
         locale={locale} 
@@ -245,13 +245,13 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           <div className={`${isMobile ? '' : 'max-w-[1120px] mx-auto px-6'}`}>
             <h1 
               className={`mb-2 ${isMobile ? 'text-left text-2xl' : 'text-center'}`}
-              style={{ color: '#FFFCEB' }}
+              style={{ color: '#FDFDFD' }}
             >
               {t.blogPage.title}
             </h1>
             <p 
               className={`leading-[150%] ${isMobile ? 'text-left text-sm' : 'text-center'}`}
-              style={{ color: '#FFFCEB', opacity: 0.9 }}
+              style={{ color: '#FDFDFD', opacity: 0.9 }}
             >
               {t.blogPage.subtitle}
             </p>
@@ -273,10 +273,10 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                         borderRadius: '8px',
                         backgroundColor: '#2D3508',
                         borderColor: 'rgba(255, 252, 235, 0.15)',
-                        color: '#FFFCEB'
+                        color: '#FDFDFD'
                       }}
                     >
-                      <span className="text-sm font-medium" style={{ color: '#FFFCEB' }}>
+                      <span className="text-sm font-medium" style={{ color: '#FDFDFD' }}>
                         {categories.find(c => c.id === activeCategory)?.label}
                       </span>
                       <ChevronDown
@@ -284,7 +284,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                         className={`transition-transform ${
                           isSidebarOpen ? 'rotate-180' : ''
                         }`}
-                        style={{ color: '#FFFCEB', opacity: 0.8 }}
+                        style={{ color: '#FDFDFD', opacity: 0.8 }}
                       />
                     </CollapsibleTrigger>
                     <CollapsibleContent 

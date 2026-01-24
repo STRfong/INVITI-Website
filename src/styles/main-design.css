@@ -5,10 +5,10 @@
     --bs-primary: #2D3508;
     --bs-primary-rgb: 45, 53, 8;
     
-    --bs-secondary: #FFFCEB;
+    --bs-secondary: #FDFDFD;
     --bs-secondary-rgb: 255, 252, 235;
     
-    --bs-body-bg: #FFFCEB;
+    --bs-body-bg: #FDFDFD;
     --bs-body-color: #2D3508;
     
     --bs-link-color: #2D3508;
@@ -23,33 +23,33 @@
 
 /* Global Styles */
 html {
-    background-color: #FFFCEB !important;
+    background-color: #FDFDFD !important;
 }
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #FFFCEB !important;
+    background-color: #FDFDFD !important;
     color: #2D3508 !important;
 }
 
 #root {
-    background-color: #FFFCEB !important;
+    background-color: #FDFDFD !important;
 }
 
 /* Override Tailwind bg-white to use theme background */
 .bg-white {
-    background-color: #FFFCEB !important;
+    background-color: #FDFDFD !important;
 }
 
 /* Ensure all sections use theme background by default */
 section:not(#features) {
-    background-color: #FFFCEB;
+    background-color: #FDFDFD;
 }
 
 /* Features section uses dark background */
 section#features {
     background-color: #2D3508 !important;
-    color: #FFFCEB !important;
+    color: #FDFDFD !important;
 }
 
 section#features * {
@@ -88,7 +88,7 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, label {
 /* Secondary color section - Dark green background with light text */
 .bg-secondary-section {
     background-color: #2D3508;
-    color: #FFFCEB;
+    color: #FDFDFD;
 }
 
 .bg-secondary-section h1,
@@ -98,7 +98,7 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, label {
 .bg-secondary-section h5,
 .bg-secondary-section h6,
 .bg-secondary-section p {
-    color: #FFFCEB;
+    color: #FDFDFD;
 }
 
 /* Buttons */
@@ -115,7 +115,7 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, label {
 .btn-primary {
     background-color: var(--bs-primary);
     border-color: var(--bs-primary);
-    color: #FFFCEB;
+    color: #FDFDFD;
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
@@ -132,7 +132,7 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, label {
 .btn-secondary:hover, .btn-secondary:focus, .btn-secondary:active {
     background-color: #2D3508 !important;
     border-color: #2D3508 !important;
-    color: #FFFCEB !important;
+    color: #FDFDFD !important;
 }
 
 .btn-outline-dark {
@@ -143,7 +143,7 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, label {
 
 .btn-outline-dark:hover {
     background-color: #2D3508 !important;
-    color: #FFFCEB !important;
+    color: #FDFDFD !important;
     border-color: #2D3508 !important;
 }
 

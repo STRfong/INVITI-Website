@@ -52,14 +52,14 @@ export const BlogCard: React.FC<BlogCardProps> = ({
       )}
 
       {/* Content */}
-      <div className="p-4 sm:p-4 flex flex-col flex-grow" style={{ color: '#FFFCEB' }}>
+      <div className="p-4 sm:p-4 flex flex-col flex-grow" style={{ color: '#FDFDFD' }}>
         {/* Title */}
-        <h5 className="mb-2 leading-[140%] transition-colors text-sm sm:text-base" style={{ color: '#FFFCEB', fontWeight: 500 }}>
+        <h5 className="mb-2 leading-[140%] transition-colors text-sm sm:text-base" style={{ color: '#FDFDFD', fontWeight: 500 }}>
           {title}
         </h5>
 
         {/* Excerpt */}
-        <p className="text-xs sm:text-sm mb-3 sm:mb-4 leading-[150%] line-clamp-2" style={{ color: '#FFFCEB', opacity: 0.9 }}>
+        <p className="text-xs sm:text-sm mb-3 sm:mb-4 leading-[150%] line-clamp-2" style={{ color: '#FDFDFD', opacity: 0.9 }}>
           {excerpt}
         </p>
 
@@ -70,7 +70,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({
               className="blog-card-avatar flex items-center justify-center"
               style={{ 
                 padding: '4px',
-                backgroundColor: '#FFFCEB',
+                backgroundColor: '#FDFDFD',
                 borderRadius: '4px'
               }}
             >
@@ -92,24 +92,24 @@ export const BlogCard: React.FC<BlogCardProps> = ({
                 height: '32px'
               }}
             >
-              <span className="text-[10px] sm:text-xs" style={{ color: '#FFFCEB' }}>{author.name[0]}</span>
+              <span className="text-[10px] sm:text-xs" style={{ color: '#FDFDFD' }}>{author.name[0]}</span>
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <div className="text-xs sm:text-sm truncate" style={{ color: '#FFFCEB' }}>{author.name}</div>
-            <div className="text-xs truncate" style={{ color: '#FFFCEB', opacity: 0.8 }}>{author.role}</div>
+            <div className="text-xs sm:text-sm truncate" style={{ color: '#FDFDFD' }}>{author.name}</div>
+            <div className="text-xs truncate" style={{ color: '#FDFDFD', opacity: 0.8 }}>{author.role}</div>
           </div>
         </div>
 
         {/* Meta Row */}
-        <div className="flex items-center gap-1.5 sm:gap-2 text-xs flex-wrap sm:flex-nowrap pt-1 mt-auto" style={{ color: '#FFFCEB', opacity: 0.8 }}>
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs flex-wrap sm:flex-nowrap pt-1 mt-auto" style={{ color: '#FDFDFD', opacity: 0.8 }}>
           <span 
             className="px-2 py-1" 
             style={{ 
               borderRadius: '4px',
               backgroundColor: 'rgba(255, 252, 235, 0.15)',
               border: '1px solid rgba(255, 252, 235, 0.2)',
-              color: '#FFFCEB'
+              color: '#FDFDFD'
             }}
           >
             {category}

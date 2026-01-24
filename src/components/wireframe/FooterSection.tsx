@@ -30,7 +30,7 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
   };
 
   return (
-    <footer className="border-0" style={{ backgroundColor: '#2D350B', color: '#FFFCEB' }}>
+    <footer className="border-0" style={{ backgroundColor: '#2D350B', color: '#FDFDFD' }}>
       <div className={isMobile ? 'container-fluid px-4 py-5' : 'container py-5'}>
         <div className="row g-5">
           
@@ -56,12 +56,12 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
             <div className="row g-4">
               {/* Column 1: Company */}
               <div className="col-12 col-md-4">
-                <h6 className="mb-3 fw-bold" style={{ color: '#FFFCEB' }}>{t.footer.company}</h6>
+                <h6 className="mb-3 fw-bold" style={{ color: '#FDFDFD' }}>{t.footer.company}</h6>
                 <div className="d-flex flex-column gap-2">
                   <button
                     onClick={() => onNavigate?.('/about')}
                     className="text-decoration-none small text-start bg-transparent border-0 p-0"
-                    style={{ color: '#FFFCEB', opacity: 0.9 }}
+                    style={{ color: '#FDFDFD', opacity: 0.9 }}
                     onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
                     onMouseLeave={(e) => e.currentTarget.style.opacity = '0.9'}
                   >
@@ -70,7 +70,7 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
                   <button
                     onClick={() => onNavigate?.('/terms')}
                     className="text-decoration-none small text-start bg-transparent border-0 p-0"
-                    style={{ color: '#FFFCEB', opacity: 0.9 }}
+                    style={{ color: '#FDFDFD', opacity: 0.9 }}
                     onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
                     onMouseLeave={(e) => e.currentTarget.style.opacity = '0.9'}
                   >
@@ -81,12 +81,12 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
 
               {/* Column 2: Resources */}
               <div className="col-12 col-md-4">
-                <h6 className="mb-3 fw-bold" style={{ color: '#FFFCEB' }}>{t.footer.resources}</h6>
+                <h6 className="mb-3 fw-bold" style={{ color: '#FDFDFD' }}>{t.footer.resources}</h6>
                 <div className="d-flex flex-column gap-2">
                   <button 
                     onClick={onNavigateToHelpCenter} 
                     className="text-decoration-none small text-left bg-transparent border-0 p-0"
-                    style={{ color: '#FFFCEB', opacity: 0.9 }}
+                    style={{ color: '#FDFDFD', opacity: 0.9 }}
                     onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
                     onMouseLeave={(e) => e.currentTarget.style.opacity = '0.9'}
                   >
@@ -95,7 +95,7 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
                   <button 
                     onClick={() => onNavigate?.('/blog')} 
                     className="text-decoration-none small text-left bg-transparent border-0 p-0"
-                    style={{ color: '#FFFCEB', opacity: 0.9 }}
+                    style={{ color: '#FDFDFD', opacity: 0.9 }}
                     onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
                     onMouseLeave={(e) => e.currentTarget.style.opacity = '0.9'}
                   >
@@ -106,8 +106,8 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
 
               {/* Column 3: INVITI For */}
               <div className="col-12 col-md-4">
-                <h6 className="mb-3 fw-bold" style={{ color: '#FFFCEB' }}>{t.footer.invitiFor}</h6>
-                <div className="d-flex flex-column gap-2 small" style={{ color: '#FFFCEB', opacity: 0.9 }}>
+                <h6 className="mb-3 fw-bold" style={{ color: '#FDFDFD' }}>{t.footer.invitiFor}</h6>
+                <div className="d-flex flex-column gap-2 small" style={{ color: '#FDFDFD', opacity: 0.9 }}>
                   <span>{t.footer.enterprise}</span>
                   <span>{t.footer.teams}</span>
                   <span className="mb-0">{t.footer.individuals}</span>
@@ -120,7 +120,7 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
         <hr className="my-4" style={{ borderColor: 'rgba(255, 252, 235, 0.25)' }} />
 
         <div className="text-center">
-          <p className="small mb-0" style={{ color: '#FFFCEB', opacity: 0.8 }}>
+          <p className="small mb-0" style={{ color: '#FDFDFD', opacity: 0.8 }}>
             {t.footer.copyright}
           </p>
         </div>

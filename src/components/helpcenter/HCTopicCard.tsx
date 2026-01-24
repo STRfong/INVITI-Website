@@ -35,22 +35,22 @@ export const HCTopicCard: React.FC<HCTopicCardProps> = ({
         e.currentTarget.style.transform = 'translateY(0)';
       }}
     >
-      <div className="flex flex-col items-start text-left h-full" style={{ color: '#FFFCEB' }}>
+      <div className="flex flex-col items-start text-left h-full" style={{ color: '#FDFDFD' }}>
         {/* Icon at the top, centered */}
         <div className="mb-4">
-          <Icon size={36} style={{ color: '#FFFCEB' }} strokeWidth={1.5} />
+          <Icon size={36} style={{ color: '#FDFDFD' }} strokeWidth={1.5} />
         </div>
         
         {/* Title with arrow */}
-        <h5 className="mb-2 font-semibold text-base leading-[140%] transition-colors" style={{ color: '#FFFCEB' }}>
+        <h5 className="mb-2 font-semibold text-base leading-[140%] transition-colors" style={{ color: '#FDFDFD' }}>
           {title}
         </h5>
         
         {/* Description/subtitle */}
-        <p className="text-sm leading-[150%] mb-3" style={{ color: '#FFFCEB', opacity: 0.9 }}>
+        <p className="text-sm leading-[150%] mb-3" style={{ color: '#FDFDFD', opacity: 0.9 }}>
           {description}
         </p>
-        <div className="flex justify-start items-center text-left gap-1 text-sm transition-colors mt-auto" style={{ color: '#FFFCEB', opacity: 0.8 }}>
+        <div className="flex justify-start items-center text-left gap-1 text-sm transition-colors mt-auto" style={{ color: '#FDFDFD', opacity: 0.8 }}>
             <span>Learn more</span>
             <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
         </div>

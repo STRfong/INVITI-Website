@@ -200,7 +200,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FFFCEB' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FDFDFD' }}>
       {/* Navigation Stack */}
       <NavStack
         locale={locale} 
@@ -238,7 +238,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
                   borderRadius: '4px',
                   backgroundColor: '#2D3508',
                   borderColor: 'rgba(45, 53, 8, 0.2)',
-                  color: '#FFFCEB'
+                  color: '#FDFDFD'
                 }}
               >
                 {post.category}
@@ -262,7 +262,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
                   minWidth: isMobile ? '40px' : '48px',
                   minHeight: isMobile ? '40px' : '48px',
                   padding: isMobile ? '6px' : '8px',
-                  backgroundColor: '#FFFCEB'
+                  backgroundColor: '#FDFDFD'
                 }}
               >
                 <ImageWithFallback
@@ -329,7 +329,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
                   />
                   <div className="min-w-0">
                     <div className={`mb-1 ${isMobile ? 'text-[10px]' : 'text-xs'} transition-colors`} style={{ color: 'rgba(255, 252, 235, 0.7)' }}>{t.blogPage.previousPost}</div>
-                    <div className={`transition-colors truncate ${isMobile ? 'text-xs' : 'text-sm'} group-hover:opacity-90`} style={{ color: '#FFFCEB' }}>
+                    <div className={`transition-colors truncate ${isMobile ? 'text-xs' : 'text-sm'} group-hover:opacity-90`} style={{ color: '#FDFDFD' }}>
                       {prevPost.title}
                     </div>
                   </div>
@@ -352,7 +352,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
                 >
                   <div className="min-w-0">
                     <div className={`mb-1 ${isMobile ? 'text-[10px]' : 'text-xs'} transition-colors`} style={{ color: 'rgba(255, 252, 235, 0.7)' }}>{t.blogPage.nextPost}</div>
-                    <div className={`transition-colors truncate ${isMobile ? 'text-xs' : 'text-sm'} group-hover:opacity-90`} style={{ color: '#FFFCEB' }}>
+                    <div className={`transition-colors truncate ${isMobile ? 'text-xs' : 'text-sm'} group-hover:opacity-90`} style={{ color: '#FDFDFD' }}>
                       {nextPost.title}
                     </div>
                   </div>

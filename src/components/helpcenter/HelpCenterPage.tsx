@@ -157,7 +157,7 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FFFCEB' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#FDFDFD' }}>
       {/* Global Navigation Stack (Fixed) */}
       <NavStack
         isMobile={isMobile}
@@ -175,7 +175,7 @@ export const HelpCenterPage: React.FC<HelpCenterPageProps> = ({
         style={{ backgroundColor: '#2D3508' }}
       >
         <div className={`max-w-[1120px] mx-auto ${isMobile ? 'px-6' : ''}`}>
-          <h1 className={`mb-6 ${isMobile ? 'text-2xl' : 'text-3xl'}`} style={{ color: '#FFFCEB' }}>
+          <h1 className={`mb-6 ${isMobile ? 'text-2xl' : 'text-3xl'}`} style={{ color: '#FDFDFD' }}>
             {t.helpCenterPage.title}
           </h1>
           

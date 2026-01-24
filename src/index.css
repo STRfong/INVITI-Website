@@ -2805,17 +2805,17 @@
 :root {
   --font-size: 16px;
   /* Primary colors: Light background + Dark green button */
-  --background: #FFFCEB;
+  --background: #FDFDFD;
   --foreground: #2D3508;
-  --card: #FFFCEB;
+  --card: #FDFDFD;
   --card-foreground: #2D3508;
-  --popover: #FFFCEB;
+  --popover: #FDFDFD;
   --popover-foreground: #2D3508;
   --primary: #2D3508;
-  --primary-foreground: #FFFCEB;
+  --primary-foreground: #FDFDFD;
   /* Secondary colors: Dark green background + Light text */
   --secondary: #2D3508;
-  --secondary-foreground: #FFFCEB;
+  --secondary-foreground: #FDFDFD;
   --muted: #F5F5E8;
   --muted-foreground: #4A5230;
   --accent: #E8E8D5;
@@ -2835,10 +2835,10 @@
   --chart-4: oklch(.828 .189 84.429);
   --chart-5: oklch(.769 .188 70.08);
   --radius: .625rem;
-  --sidebar: #FFFCEB;
+  --sidebar: #FDFDFD;
   --sidebar-foreground: #2D3508;
   --sidebar-primary: #2D3508;
-  --sidebar-primary-foreground: #FFFCEB;
+  --sidebar-primary-foreground: #FDFDFD;
   --sidebar-accent: #F5F5E8;
   --sidebar-accent-foreground: #2D3508;
   --sidebar-border: rgba(45, 53, 8, 0.15);
