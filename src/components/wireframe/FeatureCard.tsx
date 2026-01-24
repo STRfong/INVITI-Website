@@ -7,6 +7,7 @@ interface FeatureCardProps {
   title: string;
   description: string;
   screenshot?: string;
+  hoverGif?: string; // Optional GIF to show on hover
   onClick?: () => void;
   onScreenshotClick?: () => void;
   isMobile?: boolean;
@@ -20,6 +21,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
   title, 
   description, 
   screenshot,
+  hoverGif,
   onClick,
   onScreenshotClick,
   isMobile = false,
@@ -56,7 +58,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
       `}
       style={{ 
         transition: 'box-shadow 0.2s',
-        backgroundColor: '#FFFCEB',
+        backgroundColor: '#FDFDFD',
         borderColor: 'rgba(45, 53, 8, 0.15)',
         overflow: 'hidden'
       }}
@@ -192,7 +194,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
             }}
           >
             <ImageWithFallback 
-              src={screenshot}
+              src={isHoveringImage && hoverGif ? hoverGif : screenshot}
               alt={`${title} screenshot`}
               className="w-100 h-100 object-fit-cover transition-transform"
               style={{ 
@@ -214,7 +216,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
                   style={{
                     opacity: isHoveringImage ? 1 : 0,
                     transform: isHoveringImage ? 'scale(1)' : 'scale(0.9)',
-                    backgroundColor: '#FFFCEB'
+                    backgroundColor: '#FDFDFD'
                   }}
                 >
                   <ZoomIn size={20} style={{ color: '#2D3508' }} />

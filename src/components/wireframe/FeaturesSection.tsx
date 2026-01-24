@@ -3,8 +3,9 @@ import { Calendar, Mail, Database } from 'lucide-react';
 import { FeatureCard } from './FeatureCard';
 import { Locale, getTranslations } from '../../locales/translations';
 import eventGif from '../../assets/Feature/創建活動_Gif版.gif';
-import invitationImage from '../../assets/functions/一鍵邀請與追蹤出席狀況.png.webp';
-import databaseImage from '../../assets/functions/貴賓資料庫.png.webp';
+import invitationImage from '../../assets/functions/一鍵邀請與追蹤出席狀況＿封面.webp';
+import invitationGif from '../../assets/functions/一鍵邀請與追蹤出席狀況.gif';
+import databaseImage from '../../assets/functions/貴賓資料庫＿封面.webp';
 
 interface FeaturesSectionProps {
   isMobile?: boolean;
@@ -34,7 +35,8 @@ export const FeaturesSection: React.FC<FeaturesSectionProps> = ({
     icon: <Mail size={24} style={{ color: '#2D3508' }} />,
     title: t.features.card2Title,
     description: t.features.card2Description,
-    screenshot: invitationImage
+    screenshot: invitationImage,
+    hoverGif: invitationGif
   };
 
   const feature3 = {
@@ -52,7 +54,7 @@ export const FeaturesSection: React.FC<FeaturesSectionProps> = ({
         className="section-padding"
         style={{
           backgroundColor: '#2D3508',
-          color: '#FFFCEB',
+          color: '#FDFDFD',
           borderTop: '1px solid rgba(255, 252, 235, 0.15)',
           borderBottom: '1px solid rgba(255, 252, 235, 0.15)'
         }}
@@ -62,7 +64,7 @@ export const FeaturesSection: React.FC<FeaturesSectionProps> = ({
           <div className="mb-5">
             <h2 
               className={`mb-3 ${isMobile ? 'text-start' : 'text-center'}`}
-              style={{ color: '#FFFCEB' }}
+              style={{ color: '#FDFDFD' }}
             >
               {t.features.sectionTitle}
             </h2>
@@ -92,6 +94,7 @@ export const FeaturesSection: React.FC<FeaturesSectionProps> = ({
                 title={feature2.title}
                 description={feature2.description}
                 screenshot={feature2.screenshot}
+                hoverGif={feature2.hoverGif}
                 onClick={() => onNavigate?.(`/features/${feature2.id}`)}
                 isMobile={isMobile}
                 learnMoreText={t.features.viewDetails}
