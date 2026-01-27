@@ -44,6 +44,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
   
   const [activeCategory, setActiveCategory] = useState('all');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Debug: Log screen size detection (remove in production)
   useEffect(() => {
@@ -153,33 +154,73 @@ export const BlogPage: React.FC<BlogPageProps> = ({
     }
   };
 
+  // Handle category change with fade animation
+  const handleCategoryChange = (categoryId: string) => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setActiveCategory(categoryId);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 50);
+    }, 150);
+  };
+
   // Sidebar component
-  const SidebarContent = () => (
+  const SidebarContent = ({ isDarkBackground = false }: { isDarkBackground?: boolean }) => (
     <nav className="space-y-1">
-      {categories.map((category) => (
-        <button
-          key={category.id}
-          onClick={() => {
-            setActiveCategory(category.id);
-            if (isMobile) {
-              setIsSidebarOpen(false);
-            }
-          }}
-          className={`w-full text-left px-3 py-2 text-sm transition-colors leading-[140%] ${
-            activeCategory === category.id
-              ? 'bg-gray-100 text-gray-900 font-medium'
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-          }`}
-          style={{ borderRadius: '4px' }}
-        >
-          {category.label}
-        </button>
-      ))}
+      {categories.map((category) => {
+        // For mobile (dark background), use light text; for desktop (light background), use dark text
+        const defaultTextColor = isDarkBackground ? '#FDFDFD' : '#2D3508';
+        const hoverBgColor = isDarkBackground ? 'rgba(255, 252, 235, 0.1)' : 'rgba(45, 53, 8, 0.1)';
+        
+        return (
+          <button
+            key={category.id}
+            onClick={() => {
+              handleCategoryChange(category.id);
+              if (isMobile) {
+                setIsSidebarOpen(false);
+              }
+            }}
+            className={`w-full text-left px-3 py-2 text-sm transition-all duration-200 leading-[140%]`}
+            style={{ 
+              borderRadius: '4px',
+              backgroundColor: activeCategory === category.id 
+                ? '#2D3508' 
+                : 'transparent',
+              color: activeCategory === category.id 
+                ? '#FDFDFD' 
+                : defaultTextColor,
+              opacity: activeCategory === category.id ? 1 : 1,
+              fontWeight: activeCategory === category.id ? 600 : 400,
+              border: activeCategory === category.id 
+                ? '1px solid #2D3508' 
+                : '1px solid transparent'
+            }}
+            onMouseEnter={(e) => {
+              if (activeCategory !== category.id) {
+                e.currentTarget.style.backgroundColor = hoverBgColor;
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.color = defaultTextColor;
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (activeCategory !== category.id) {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.color = defaultTextColor;
+              }
+            }}
+          >
+            {category.label}
+          </button>
+        );
+      })}
     </nav>
   );
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FDFDFD' }}>
       {/* Navigation Stack */}
       <NavStack
         locale={locale} 
@@ -194,12 +235,24 @@ export const BlogPage: React.FC<BlogPageProps> = ({
       {/* Main Content */}
       <main className={isMobile ? 'flex-1' : 'flex-1'}>
         {/* Hero Section */}
-        <div className={`border-b border-gray-200 bg-gray-50 ${isMobile ? 'pt-12 pb-6 px-4' : 'py-12'}`}>
+        <div 
+          className={`border-b ${isMobile ? 'pt-12 pb-6 px-4' : 'pt-20 pb-12'}`}
+          style={{ 
+            backgroundColor: '#2D3508',
+            borderBottomColor: 'rgba(255, 252, 235, 0.15)'
+          }}
+        >
           <div className={`${isMobile ? '' : 'max-w-[1120px] mx-auto px-6'}`}>
-            <h1 className={`mb-2 ${isMobile ? 'text-left text-2xl' : 'text-center'}`}>
+            <h1 
+              className={`mb-2 ${isMobile ? 'text-left text-2xl' : 'text-center'}`}
+              style={{ color: '#FDFDFD' }}
+            >
               {t.blogPage.title}
             </h1>
-            <p className={`text-gray-600 leading-[150%] ${isMobile ? 'text-left text-sm' : 'text-center'}`}>
+            <p 
+              className={`leading-[150%] ${isMobile ? 'text-left text-sm' : 'text-center'}`}
+              style={{ color: '#FDFDFD', opacity: 0.9 }}
+            >
               {t.blogPage.subtitle}
             </p>
           </div>
@@ -214,25 +267,46 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                 {/* Collapsible Sidebar */}
                 <div className="px-4 mb-4">
                   <Collapsible open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full p-3 border border-gray-200 bg-white rounded-md" style={{ borderRadius: '8px' }}>
-                      <span className="text-sm font-medium text-gray-900">
+                    <CollapsibleTrigger 
+                      className="flex items-center justify-between w-full p-3 border rounded-md" 
+                      style={{ 
+                        borderRadius: '8px',
+                        backgroundColor: '#2D3508',
+                        borderColor: 'rgba(255, 252, 235, 0.15)',
+                        color: '#FDFDFD'
+                      }}
+                    >
+                      <span className="text-sm font-medium" style={{ color: '#FDFDFD' }}>
                         {categories.find(c => c.id === activeCategory)?.label}
                       </span>
                       <ChevronDown
                         size={16}
-                        className={`text-gray-400 transition-transform ${
+                        className={`transition-transform ${
                           isSidebarOpen ? 'rotate-180' : ''
                         }`}
+                        style={{ color: '#FDFDFD', opacity: 0.8 }}
                       />
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-2 p-3 border border-gray-200 bg-white rounded-md">
-                      <SidebarContent />
+                    <CollapsibleContent 
+                      className="mt-2 p-3 border rounded-md"
+                      style={{
+                        backgroundColor: '#2D3508',
+                        borderColor: 'rgba(255, 252, 235, 0.15)'
+                      }}
+                    >
+                      <SidebarContent isDarkBackground={true} />
                     </CollapsibleContent>
                   </Collapsible>
                 </div>
 
                 {/* Single Column Feed */}
-                <div className="px-4 space-y-4">
+                <div 
+                  className="px-4 space-y-4 transition-opacity duration-300"
+                  style={{ 
+                    opacity: isTransitioning ? 0.3 : 1,
+                    transition: 'opacity 0.3s ease-in-out'
+                  }}
+                >
                   {blogPosts.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 px-4">
                       <div className={`${isMobile ? 'w-14 h-auto' : 'w-12 h-auto'} mb-3`}>
@@ -267,7 +341,13 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                 </aside>
 
                 {/* Main Feed - Two Columns */}
-                <div className="flex-1">
+                <div 
+                  className="flex-1 transition-opacity duration-300"
+                  style={{ 
+                    opacity: isTransitioning ? 0.3 : 1,
+                    transition: 'opacity 0.3s ease-in-out'
+                  }}
+                >
                   {blogPosts.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-24">
                       <div className="w-12 h-12 mb-6">

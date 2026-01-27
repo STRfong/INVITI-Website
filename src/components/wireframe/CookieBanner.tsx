@@ -34,7 +34,8 @@ export const CookieBanner: React.FC<CookieBannerProps> = ({
             {t.cookieBanner.message}{' '}
             <button
               onClick={onViewPolicy}
-              className={`btn btn-link p-0 text-dark text-decoration-underline ${isMobile ? 'text-sm' : ''}`}
+              className={`btn btn-link p-0 text-dark ${isMobile ? 'text-sm' : ''}`}
+              style={{ textDecoration: isMobile ? 'none' : 'underline' }}
             >
               {t.cookieBanner.cookiePolicy}
             </button>

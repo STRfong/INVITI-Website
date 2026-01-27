@@ -2,43 +2,45 @@
 
 :root {
   --font-size: 16px;
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
+  /* Primary colors: Light background + Dark green button */
+  --background: #FDFDFD;
+  --foreground: #2D3508;
+  --card: #FDFDFD;
+  --card-foreground: #2D3508;
+  --popover: #FDFDFD;
+  --popover-foreground: #2D3508;
+  --primary: #2D3508;
+  --primary-foreground: #FDFDFD;
+  /* Secondary colors: Dark green background + Light text */
+  --secondary: #2D3508;
+  --secondary-foreground: #FDFDFD;
+  --muted: #F5F5E8;
+  --muted-foreground: #4A5230;
+  --accent: #E8E8D5;
+  --accent-foreground: #2D3508;
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
+  --border: rgba(45, 53, 8, 0.15);
   --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
+  --input-background: #F5F5E8;
+  --switch-background: #D4D4C4;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
+  --ring: rgba(45, 53, 8, 0.2);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #FDFDFD;
+  --sidebar-foreground: #2D3508;
+  --sidebar-primary: #2D3508;
+  --sidebar-primary-foreground: #FDFDFD;
+  --sidebar-accent: #F5F5E8;
+  --sidebar-accent-foreground: #2D3508;
+  --sidebar-border: rgba(45, 53, 8, 0.15);
+  --sidebar-ring: rgba(45, 53, 8, 0.2);
 }
 
 .dark {
@@ -161,7 +163,16 @@
     p {
       font-size: var(--text-base);
       font-weight: var(--font-weight-normal);
-      line-height: 1.5;
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+      color: #2D3508;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: #2D3508;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.01em;
     }
 
     label {
@@ -223,12 +234,12 @@ section {
 /* Pricing card highlight animation */
 @keyframes pricingHighlight {
   0%, 100% {
-    border-color: #e5e5e5;
+    border-color: rgba(45, 53, 8, 0.15);
     box-shadow: none;
   }
   50% {
-    border-color: #030213;
-    box-shadow: 0 0 0 3px rgba(3, 2, 19, 0.1);
+    border-color: #2D3508;
+    box-shadow: 0 0 0 3px rgba(45, 53, 8, 0.1);
   }
 }
 
@@ -238,12 +249,12 @@ section {
 
 /* Blog post content styling */
 .blog-content {
-  color: #1f1f1f;
+  color: #2D3508;
 }
 
 .blog-content p {
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+  margin-bottom: 2rem;
+  line-height: 1.75;
 }
 
 .blog-content h2 {
@@ -274,12 +285,12 @@ section {
 }
 
 .blog-content blockquote {
-  margin: 2rem 0;
-  padding: 1.25rem 1.5rem;
-  border-left: 4px solid #e5e5e5;
-  background-color: #f9f9f9;
+  margin: 2.5rem 0;
+  padding: 1.5rem 2rem;
+  border-left: 4px solid rgba(45, 53, 8, 0.2);
+  background-color: #F5F5E8;
   font-style: italic;
-  color: #525252;
+  color: #4A5230;
 }
 
 .blog-content blockquote p {
@@ -287,11 +298,11 @@ section {
 }
 
 .blog-content a {
-  color: #030213;
+  color: #2D3508;
   text-decoration: underline;
   transition: color 200ms;
 }
 
 .blog-content a:hover {
-  color: #525252;
+  color: #1A1F05;
 }

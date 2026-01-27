@@ -28,6 +28,7 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(isMobile);
+  const [isScrolled, setIsScrolled] = useState(false);
   
   useEffect(() => {
     if (!enableResponsive) {
@@ -48,6 +49,17 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, [enableResponsive, isMobile]);
   
+  // Handle scroll to add bottom border
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    
+    handleScroll(); // Check initial scroll position
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
   const mobile = enableResponsive ? isMobileView : isMobile;
   
   const t = getTranslations(locale);
@@ -62,11 +74,12 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
       // Calculate NavStack height (Nav + Banner)
       const navHeight = 64; // h-16 = 64px
       const bannerHeight = isMobile ? 56 : 48;
+      const sectionPadding = 100;
       const isBannerDismissed = localStorage.getItem('banner-dismissed') === 'true';
       const totalNavHeight = isBannerDismissed ? navHeight : navHeight + bannerHeight;
       
       const elementPosition = section.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - totalNavHeight;
+      const offsetPosition = elementPosition + window.pageYOffset - totalNavHeight + sectionPadding;
       
       window.scrollTo({
         top: offsetPosition,
@@ -105,7 +118,13 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
   ];
 
   return (
-    <nav className="bg-light">
+    <nav 
+      className="bg-light"
+      style={{
+        borderBottom: isScrolled ? '1px solid rgba(45, 53, 8, 0.15)' : 'none',
+        transition: 'border-bottom 0.3s ease'
+      }}
+    >
       <div className={mobile ? 'container-fluid px-3 py-2' : 'container py-3'}>
         <div className="d-flex align-items-center justify-content-between">
           <button 
@@ -126,9 +145,23 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
                     <button
                       key={item.label}
                       onClick={item.action}
-                      className="btn btn-link text-dark text-decoration-none px-0"
+                      className="btn btn-link text-dark text-decoration-none px-0 position-relative nav-link-button"
+                      style={{ 
+                        paddingBottom: '4px',
+                        transition: 'color 0.2s ease'
+                      }}
                     >
                       {item.label}
+                      <span 
+                        className="position-absolute bottom-0 left-0 nav-link-underline"
+                        style={{
+                          height: '2px',
+                          width: '0%',
+                          backgroundColor: '#2D3508',
+                          transition: 'width 0.3s ease',
+                          borderRadius: '1px'
+                        }}
+                      />
                     </button>
                   ) : (
                     <a 

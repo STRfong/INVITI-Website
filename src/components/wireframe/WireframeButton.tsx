@@ -34,6 +34,11 @@ export const WireframeButton: React.FC<WireframeButtonProps> = ({
     <button 
       className={btnClass}
       onClick={onClick}
+      style={variant === 'primary' && size === 'md' ? {
+        padding: '12px 32px',
+        fontSize: '1.1rem',
+        fontWeight: 500
+      } : undefined}
     >
       {children}
     </button>

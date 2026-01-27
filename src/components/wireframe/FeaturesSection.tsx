@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { Calendar, Mail, Database } from 'lucide-react';
 import { FeatureCard } from './FeatureCard';
 import { Locale, getTranslations } from '../../locales/translations';
+import eventGif from '../../assets/Feature/創建活動_Gif版.gif';
+import invitationImage from '../../assets/functions/一鍵邀請與追蹤出席狀況＿封面.webp';
+import invitationGif from '../../assets/functions/一鍵邀請與追蹤出席狀況.gif';
+import databaseImage from '../../assets/functions/貴賓資料庫＿封面.webp';
 
 interface FeaturesSectionProps {
   isMobile?: boolean;
@@ -16,66 +20,100 @@ export const FeaturesSection: React.FC<FeaturesSectionProps> = ({
 }) => {
   const t = getTranslations(locale);
 
-  // 3 main feature cards
-  const features = [
-    {
-      id: 'event-session-management',
-      icon: <Calendar size={22} className="text-dark" />,
-      title: t.features.card1Title,
-      description: t.features.card1Description,
-      screenshot: 'https://images.unsplash.com/photo-1575388902449-6bca946ad549?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldmVudCUyMGRhc2hib2FyZCUyMGludGVyZmFjZXxlbnwxfHx8fDE3NjE4MTI4OTJ8MA&ixlib=rb-4.1.0&q=80&w=1080'
-    },
-    {
-      id: 'automated-invitations',
-      icon: <Mail size={22} className="text-dark" />,
-      title: t.features.card2Title,
-      description: t.features.card2Description,
-      screenshot: 'https://images.unsplash.com/photo-1584543515885-b8981dbf0b5d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbWFpbCUyMGF1dG9tYXRpb24lMjBzeXN0ZW18ZW58MXx8fHwxNzYxODEyODkzfDA&ixlib=rb-4.1.0&q=80&w=1080'
-    },
-    {
-      id: 'guest-database',
-      icon: <Database size={22} className="text-dark" />,
-      title: t.features.card3Title,
-      description: t.features.card3Description,
-      screenshot: 'https://images.unsplash.com/photo-1740560051533-3acef26ace95?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYXRhYmFzZSUyMGNvbnRhY3RzJTIwbWFuYWdlbWVudHxlbnwxfHx8fDE3NjE4MTI4OTN8MA&ixlib=rb-4.1.0&q=80&w=1080'
-    }
-  ] as const;
+  // Feature 1: Full width card for Row 1
+  const feature1 = {
+    id: 'event-session-management',
+    icon: <Calendar size={24} style={{ color: '#2D3508' }} />,
+    title: t.features.card1Title,
+    description: t.features.card1Description,
+    screenshot: eventGif
+  };
+
+  // Features 2 & 3: Side by side cards for Row 2
+  const feature2 = {
+    id: 'automated-invitations',
+    icon: <Mail size={24} style={{ color: '#2D3508' }} />,
+    title: t.features.card2Title,
+    description: t.features.card2Description,
+    screenshot: invitationImage,
+    hoverGif: invitationGif
+  };
+
+  const feature3 = {
+    id: 'guest-database',
+    icon: <Database size={24} style={{ color: '#2D3508' }} />,
+    title: t.features.card3Title,
+    description: t.features.card3Description,
+    screenshot: databaseImage
+  };
 
   return (
     <>
       <section 
         id="features" 
-        className="section-padding bg-light border-top border-bottom"
+        className="section-padding"
+        style={{
+          backgroundColor: '#2D3508',
+          color: '#FDFDFD',
+          borderTop: '1px solid rgba(255, 252, 235, 0.15)',
+          borderBottom: '1px solid rgba(255, 252, 235, 0.15)'
+        }}
       >
         <div className={isMobile ? 'container-fluid px-4' : 'container'}>
           {/* Section Header */}
           <div className="mb-5">
-            <h2 className={`mb-3 ${isMobile ? 'text-start' : 'text-center'}`}>
+            <h2 
+              className={`mb-3 ${isMobile ? 'text-start' : 'text-center'}`}
+              style={{ color: '#FDFDFD' }}
+            >
               {t.features.sectionTitle}
             </h2>
           </div>
           
-          {/* Standard Grid */}
-          <div className="row g-4">
-            {features.map((feature) => (
-              <div key={feature.id} className="col-12 col-md-6 col-lg-4">
-                <FeatureCard
-                  icon={feature.icon}
-                  title={feature.title}
-                  description={feature.description}
-                  screenshot={feature.screenshot}
-                  onClick={() => onNavigate?.(`/features/${feature.id}`)}
-                  isMobile={isMobile}
-                  learnMoreText={t.features.viewDetails}
-                />
-              </div>
-            ))}
+          {/* Row 1: Full width card */}
+          <div className="row g-4 mb-4">
+            <div className="col-12">
+              <FeatureCard
+                icon={feature1.icon}
+                title={feature1.title}
+                description={feature1.description}
+                screenshot={feature1.screenshot}
+                onClick={() => onNavigate?.(`/features/${feature1.id}`)}
+                isMobile={isMobile}
+                learnMoreText={t.features.viewDetails}
+                isFullWidth={true}
+              />
+            </div>
           </div>
 
-          
+          {/* Row 2: Two cards side by side */}
+          <div className="row g-4">
+            <div className="col-12 col-md-6">
+              <FeatureCard
+                icon={feature2.icon}
+                title={feature2.title}
+                description={feature2.description}
+                screenshot={feature2.screenshot}
+                hoverGif={feature2.hoverGif}
+                onClick={() => onNavigate?.(`/features/${feature2.id}`)}
+                isMobile={isMobile}
+                learnMoreText={t.features.viewDetails}
+              />
+            </div>
+            <div className="col-12 col-md-6">
+              <FeatureCard
+                icon={feature3.icon}
+                title={feature3.title}
+                description={feature3.description}
+                screenshot={feature3.screenshot}
+                onClick={() => onNavigate?.(`/features/${feature3.id}`)}
+                isMobile={isMobile}
+                learnMoreText={t.features.viewDetails}
+              />
+            </div>
+          </div>
         </div>
       </section>
-
     </>
   );
 };

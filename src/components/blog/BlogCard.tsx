@@ -30,8 +30,12 @@ export const BlogCard: React.FC<BlogCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer border border-gray-200 bg-white transition-all hover:border-gray-300 hover:shadow-sm active:opacity-90 flex flex-col h-full w-full"
-      style={{ borderRadius: '8px' }}
+      className="group cursor-pointer border transition-all hover:shadow-lg active:opacity-90 flex flex-col h-full w-full"
+      style={{ 
+        borderRadius: '8px',
+        backgroundColor: '#2D3508',
+        borderColor: 'rgba(255, 252, 235, 0.15)'
+      }}
     >
       {/* Thumbnail */}
       {thumbnail && (
@@ -48,23 +52,27 @@ export const BlogCard: React.FC<BlogCardProps> = ({
       )}
 
       {/* Content */}
-      <div className="p-4 sm:p-4 flex flex-col flex-grow">
+      <div className="p-4 sm:p-4 flex flex-col flex-grow" style={{ color: '#FDFDFD' }}>
         {/* Title */}
-        <h5 className="mb-2 leading-[140%] text-gray-900 group-hover:text-gray-700 transition-colors text-sm sm:text-base">
+        <h5 className="mb-2 leading-[140%] transition-colors text-sm sm:text-base" style={{ color: '#FDFDFD', fontWeight: 500 }}>
           {title}
         </h5>
 
         {/* Excerpt */}
-        <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 leading-[150%] line-clamp-2">
+        <p className="text-xs sm:text-sm mb-3 sm:mb-4 leading-[150%] line-clamp-2" style={{ color: '#FDFDFD', opacity: 0.9 }}>
           {excerpt}
         </p>
 
         {/* Author Row */}
-        <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3 pb-2 sm:pb-3 border-b border-gray-100">
+        <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3 pb-2 sm:pb-3" style={{ borderBottom: '1px solid rgba(255, 252, 235, 0.15)' }}>
           {author.avatar && (
             <div 
-              className="blog-card-avatar bg-gray-100 flex items-center justify-center"
-              style={{ padding: '4px' }}
+              className="blog-card-avatar flex items-center justify-center"
+              style={{ 
+                padding: '4px',
+                backgroundColor: '#FDFDFD',
+                borderRadius: '4px'
+              }}
             >
               <ImageWithFallback
                 src={author.avatar}
@@ -75,19 +83,35 @@ export const BlogCard: React.FC<BlogCardProps> = ({
             </div>
           )}
           {!author.avatar && (
-            <div className="blog-card-avatar bg-gray-200 flex items-center justify-center">
-              <span className="text-[10px] sm:text-xs text-gray-600">{author.name[0]}</span>
+            <div 
+              className="blog-card-avatar flex items-center justify-center"
+              style={{ 
+                backgroundColor: 'rgba(255, 252, 235, 0.15)',
+                borderRadius: '4px',
+                width: '32px',
+                height: '32px'
+              }}
+            >
+              <span className="text-[10px] sm:text-xs" style={{ color: '#FDFDFD' }}>{author.name[0]}</span>
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <div className="text-xs sm:text-sm text-gray-900 truncate">{author.name}</div>
-            <div className="text-xs text-gray-500 truncate">{author.role}</div>
+            <div className="text-xs sm:text-sm truncate" style={{ color: '#FDFDFD' }}>{author.name}</div>
+            <div className="text-xs truncate" style={{ color: '#FDFDFD', opacity: 0.8 }}>{author.role}</div>
           </div>
         </div>
 
         {/* Meta Row */}
-        <div className="flex items-center gap-1.5 sm:gap-2 text-xs text-gray-500 flex-wrap sm:flex-nowrap pt-1 mt-auto">
-          <span className="px-2 py-1 bg-gray-50 border border-gray-200" style={{ borderRadius: '4px' }}>
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs flex-wrap sm:flex-nowrap pt-1 mt-auto" style={{ color: '#FDFDFD', opacity: 0.8 }}>
+          <span 
+            className="px-2 py-1" 
+            style={{ 
+              borderRadius: '4px',
+              backgroundColor: 'rgba(255, 252, 235, 0.15)',
+              border: '1px solid rgba(255, 252, 235, 0.2)',
+              color: '#FDFDFD'
+            }}
+          >
             {category}
           </span>
           <span>•</span>

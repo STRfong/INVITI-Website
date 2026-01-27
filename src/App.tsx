@@ -444,7 +444,7 @@ useEffect(() => {
       {/* Content */}
       {viewToRender === 'help-center' ? (
         <div className="flex justify-center pt-8">
-          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-background overflow-hidden`}>
             <HelpCenterPage
               locale={locale}
               isMobile={deviceView === 'mobile'}
@@ -458,7 +458,7 @@ useEffect(() => {
         </div>
       ) : viewToRender === 'instruction' ? (
         <div className="flex justify-center pt-12">
-          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-background overflow-hidden`}>
             <InstructionPostPage
               locale={locale}
               isMobile={deviceView === 'mobile'}
@@ -471,7 +471,7 @@ useEffect(() => {
         </div>
       ) : viewToRender === 'cookie-policy' ? (
         <div className="flex justify-center pt-12">
-          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-background overflow-hidden`}>
             <CookiePolicyPage
               onBack={handleBackFromCookiePolicy}
               onManagePreferences={handleManagePreferences}
@@ -481,7 +481,7 @@ useEffect(() => {
         </div>
       ) : viewToRender === 'blog' ? (
         <div className="flex justify-center pt-12">
-          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-background overflow-hidden`}>
             <BlogPage
               locale={locale}
               isMobile={deviceView === 'mobile'}
@@ -494,7 +494,7 @@ useEffect(() => {
         </div>
       ) : viewToRender === 'blog-post' ? (
         <div className="flex justify-center pt-12">
-          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-background overflow-hidden`}>
             <BlogPostPage
               locale={locale}
               isMobile={deviceView === 'mobile'}
@@ -507,7 +507,7 @@ useEffect(() => {
         </div>
       ) : viewToRender === 'booking' ? (
         <div className="flex justify-center pt-12">
-          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white border-2 border-gray-400 shadow-lg overflow-hidden`}>
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-background border-2 border-gray-400 shadow-lg overflow-hidden`}>
             <DemoBookingPage
               locale={locale}
               isMobile={deviceView === 'mobile'}
@@ -520,7 +520,7 @@ useEffect(() => {
         </div>
       ) : viewToRender === 'feature' && selectedFeature ? (
         <div className="flex justify-center pt-12">
-          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-background overflow-hidden`}>
             <NavStack
               isMobile={deviceView === 'mobile'}
               locale={locale}
@@ -549,7 +549,7 @@ useEffect(() => {
         </div>
       ) : viewToRender === 'about' ? (
         <div className="flex justify-center pt-12">
-          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-background overflow-hidden`}>
             <NavStack
               isMobile={deviceView === 'mobile'}
               locale={locale}
@@ -587,7 +587,7 @@ useEffect(() => {
         </div>
       ) : viewToRender === 'terms' ? (
         <div className="flex justify-center pt-12">
-          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-background overflow-hidden`}>
             <NavStack
               isMobile={deviceView === 'mobile'}
               locale={locale}
@@ -614,7 +614,7 @@ useEffect(() => {
         </div>
       ) : (
         <div className="flex justify-center pt-12">
-          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-white overflow-hidden`}>
+          <div className={`${containerWidths[deviceView]} w-full transition-all duration-300 bg-background overflow-hidden`}>
             {/* Mobile Rules Note */}
             {deviceView === 'mobile' && (
               <div className="bg-yellow-50 border-b-2 border-yellow-300 px-6 py-3">

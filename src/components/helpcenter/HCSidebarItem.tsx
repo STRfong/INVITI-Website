@@ -38,19 +38,37 @@ export const HCSidebarItem: React.FC<HCSidebarItemProps> = ({
     <div className="w-full">
       <button
         onClick={handleClick}
-        className={`w-full flex items-center justify-between px-3 py-2 text-left text-sm transition-colors leading-[140%] ${
-          isActive 
-            ? 'text-gray-900 bg-gray-100' 
-            : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
-        }`}
+        className="w-full flex items-center justify-between px-3 py-2 text-left text-sm transition-colors leading-[140%]"
+        style={{
+          backgroundColor: isActive ? '#2D3508' : 'transparent',
+          color: isActive ? '#FDFDFD' : '#2D3508',
+          opacity: isActive ? 1 : 0.8
+        }}
+        onMouseEnter={(e) => {
+          if (!isActive) {
+            e.currentTarget.style.backgroundColor = '#2D3508';
+            e.currentTarget.style.color = '#FDFDFD';
+            e.currentTarget.style.opacity = '1';
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isActive) {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = '#2D3508';
+            e.currentTarget.style.opacity = '0.8';
+          }
+        }}
       >
-        <span className="text-sm">{label}</span>
+        <span className="text-sm" style={{ color: 'inherit' }}>{label}</span>
         {hasChildren && (
           <ChevronRight 
             size={16} 
-            className={`text-gray-400 transition-transform ${
-              isExpanded ? 'rotate-90' : ''
-            }`} 
+            className="transition-transform"
+            style={{ 
+              color: isActive ? '#FDFDFD' : '#2D3508',
+              opacity: 0.7,
+              transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'
+            }}
           />
         )}
       </button>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import eventSessionGif from '../../assets/Feature/創建活動_Gif版.gif';
 import autoInviteImage from '../../assets/functions/一鍵邀請與追蹤出席狀況.png.webp';
 import guestDbImage from '../../assets/functions/貴賓資料庫.png.webp';
+import eventManagementImage from '../../assets/functions/活動管理.png.webp';
 import { Calendar, Mail, Database, ZoomIn } from 'lucide-react';
 import { FeatureCard } from '../wireframe/FeatureCard';
 import { Locale, getTranslations } from '../../locales/translations';
@@ -45,9 +46,9 @@ const youtubeVideoId = '4QObyx7sDhI';
 
 // Screenshot images for feature cards (matching FeaturesSection.tsx)
 const screenshotMap: Record<FeatureContentId, string> = {
-  'event-session-management': 'https://images.unsplash.com/photo-1575388902449-6bca946ad549?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldmVudCUyMGRhc2hib2FyZCUyMGludGVyZmFjZXxlbnwxfHx8fDE3NjE4MTI4OTJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
-  'automated-invitations': 'https://images.unsplash.com/photo-1584543515885-b8981dbf0b5d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbWFpbCUyMGF1dG9tYXRpb24lMjBzeXN0ZW18ZW58MXx8fHwxNzYxODEyODkzfDA&ixlib=rb-4.1.0&q=80&w=1080',
-  'guest-database': 'https://images.unsplash.com/photo-1740560051533-3acef26ace95?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYXRhYmFzZSUyMGNvbnRhY3RzJTIwbWFuYWdlbWVudHxlbnwxfHx8fDE3NjE4MTI4OTN8MA&ixlib=rb-4.1.0&q=80&w=1080'
+  'event-session-management': eventManagementImage,
+  'automated-invitations': autoInviteImage,
+  'guest-database': guestDbImage
 };
 
 function getLocalizedContent(
@@ -525,7 +526,7 @@ export const FeatureContentPage: React.FC<FeatureContentPageProps> = ({
           </h3>
           <div className="row g-4">
             {relatedFeatures.map((feature) => (
-              <div key={feature.id} className="col-12 col-md-6 col-lg-4">
+              <div key={feature.id} className="col-12 col-md-6">
                 <FeatureCard
                   icon={feature.icon}
                   title={feature.title}

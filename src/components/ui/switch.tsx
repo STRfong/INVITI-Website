@@ -35,7 +35,7 @@ function Switch({
         "border-2 border-transparent transition-colors duration-200 ease-in-out",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2",
         // State-based background colors
-        checked ? "bg-[#030213]" : "bg-[#cbced4]",
+        checked ? "bg-[#2D3508]" : "bg-[#D4D4C4]",
         // Disabled styles
         disabled && "cursor-not-allowed opacity-30",
         className
@@ -43,7 +43,7 @@ function Switch({
       style={{
         width: '44px',
         height: '26px',
-        backgroundColor: '#000000',
+        backgroundColor: checked ? '#2D3508' : '#D4D4C4',
         borderRadius: '12px'
       }}
     >

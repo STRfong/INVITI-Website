@@ -199,6 +199,46 @@ export const HCSidebar: React.FC<HCSidebarProps> = ({
   const backButtonSectionHeight = 72; // py-6 (48px) + button height (~24px)
   const topOffset = navHeight + backButtonSectionHeight + 40;
 
+  // Calculate max height to respect footer position
+  const [maxHeight, setMaxHeight] = useState<string>(`calc(100vh - ${topOffset}px)`);
+
+  useEffect(() => {
+    if (!isInstructionPostPage) return;
+
+    const updateMaxHeight = () => {
+      const footer = document.querySelector('footer');
+      if (footer) {
+        // Get footer's position relative to viewport
+        const footerTop = footer.getBoundingClientRect().top;
+        const viewportHeight = window.innerHeight;
+        
+        // Calculate available height: from topOffset to footer top (with some padding)
+        // If footer is below viewport, use viewport height; otherwise use footer position
+        const availableHeight = footerTop > topOffset 
+          ? footerTop - topOffset - 20 // 20px padding before footer
+          : viewportHeight - topOffset; // Footer not visible, use full viewport
+        
+        // Ensure minimum height and don't exceed viewport
+        const finalHeight = Math.max(200, Math.min(availableHeight, viewportHeight - topOffset));
+        setMaxHeight(`${finalHeight}px`);
+      } else {
+        // Fallback if footer not found
+        setMaxHeight(`calc(100vh - ${topOffset}px)`);
+      }
+    };
+
+    // Use requestAnimationFrame to ensure DOM is ready
+    const timeoutId = setTimeout(updateMaxHeight, 0);
+    window.addEventListener('scroll', updateMaxHeight, { passive: true });
+    window.addEventListener('resize', updateMaxHeight, { passive: true });
+    
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('scroll', updateMaxHeight);
+      window.removeEventListener('resize', updateMaxHeight);
+    };
+  }, [isInstructionPostPage, topOffset]);
+
   return (
     <aside className="w-60 flex-shrink-0">
       <div 
@@ -206,7 +246,7 @@ export const HCSidebar: React.FC<HCSidebarProps> = ({
         style={isInstructionPostPage ? { 
           width: '240px',
           top: `${topOffset}px`,
-          maxHeight: `calc(100vh - ${topOffset}px)`
+          maxHeight: maxHeight
         } : undefined}
       >
         <div className="mb-3 px-3">
