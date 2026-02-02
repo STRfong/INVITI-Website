@@ -63,7 +63,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isMobile = false, loca
                   variant="primary" 
                   size="md"
                   className="w-100 w-sm-auto"
-                  onClick={() => onNavigate?.('/booking')}
+                  href="booking"
                 >
                   {t.hero.bookDemo}
                 </WireframeButton>

@@ -26,10 +26,6 @@ export const DemoBookingPage: React.FC<DemoBookingPageProps> = ({
 }) => {
   const t = getTranslations(locale);
 
-  const handleBooking = () => {
-    window.open(GOOGLE_CALENDAR_URL, '_blank', 'noopener,noreferrer');
-  };
-
   const handleNavigateToHelpCenter = () => {
     if (onNavigate) {
       onNavigate('/help-center');
@@ -75,7 +71,9 @@ export const DemoBookingPage: React.FC<DemoBookingPageProps> = ({
             <WireframeButton 
               variant="primary" 
               className="w-full"
-              onClick={handleBooking}
+              href={GOOGLE_CALENDAR_URL}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               {t.demoBooking.ctaButton}
             </WireframeButton>
@@ -145,7 +143,9 @@ export const DemoBookingPage: React.FC<DemoBookingPageProps> = ({
             <WireframeButton 
               variant="primary" 
               className="min-w-[240px]"
-              onClick={handleBooking}
+              href={GOOGLE_CALENDAR_URL}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               {t.demoBooking.ctaButton}
             </WireframeButton>

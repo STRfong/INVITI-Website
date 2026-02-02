@@ -27,3 +27,4 @@ coverage/
 # misc
 *.local
 
+.local_doc/

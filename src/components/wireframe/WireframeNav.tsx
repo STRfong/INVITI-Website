@@ -203,7 +203,7 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
                 <WireframeButton 
                   variant="primary" 
                   size="sm"
-                  onClick={() => onNavigate?.('/booking')}
+                  href="booking"
                 >
                   {t.nav.tryForFree}
                 </WireframeButton>
@@ -282,10 +282,8 @@ export const WireframeNav: React.FC<WireframeNavProps> = ({
                   variant="primary" 
                   size="sm" 
                   className="w-100"
-                  onClick={() => {
-                    onNavigate?.('/booking');
-                    setMobileMenuOpen(false);
-                  }}
+                  href="booking"
+                  onClick={() => setMobileMenuOpen(false)}
                 >
                   {t.nav.tryForFree}
                 </WireframeButton>

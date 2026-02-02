@@ -6,16 +6,22 @@ interface WireframeButtonProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   onClick?: () => void;
+  /** When provided, renders as <a> for GA4 link tracking. */
+  href?: string;
+  target?: string;
+  rel?: string;
 }
 
-export const WireframeButton: React.FC<WireframeButtonProps> = ({ 
-  children, 
+export const WireframeButton: React.FC<WireframeButtonProps> = ({
+  children,
   variant = 'primary',
   size = 'md',
   className = '',
-  onClick
+  onClick,
+  href,
+  target,
+  rel
 }) => {
-  // Map to Bootstrap classes
   const variantClasses = {
     primary: 'btn-primary',
     secondary: 'btn-secondary',
@@ -24,21 +30,37 @@ export const WireframeButton: React.FC<WireframeButtonProps> = ({
 
   const sizeClasses = {
     sm: 'btn-sm',
-    md: '', 
+    md: '',
     lg: 'btn-lg'
   };
 
-  const btnClass = `btn ${variantClasses[variant] || 'btn-primary'} ${sizeClasses[size] || ''} ${className}`;
+  const btnClass = `btn ${variantClasses[variant] || 'btn-primary'} ${sizeClasses[size] || ''} ${className}`.trim();
+  const style = variant === 'primary' && size === 'md' ? {
+    padding: '12px 32px',
+    fontSize: '1.1rem',
+    fontWeight: 500
+  } : undefined;
+
+  if (href != null) {
+    return (
+      <a
+        href={href}
+        className={btnClass}
+        style={style}
+        target={target}
+        rel={rel}
+        onClick={onClick}
+      >
+        {children}
+      </a>
+    );
+  }
 
   return (
-    <button 
+    <button
       className={btnClass}
       onClick={onClick}
-      style={variant === 'primary' && size === 'md' ? {
-        padding: '12px 32px',
-        fontSize: '1.1rem',
-        fontWeight: 500
-      } : undefined}
+      style={style}
     >
       {children}
     </button>
