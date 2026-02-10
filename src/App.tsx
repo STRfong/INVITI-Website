@@ -375,8 +375,21 @@ useEffect(() => {
 }, [locale]);
 
 useEffect(() => {
-  resolveRoute(getCurrentPath() || '/');
-  const handlePop = () => resolveRoute(getCurrentPath() || '/');
+  const path = getCurrentPath() || '/';
+  resolveRoute(path);
+  // On initial load (or popstate), read URL hash and set scroll target so we scroll to the section
+  const hash = window.location.hash.slice(1);
+  if (hash && (path === '/' || path === '')) {
+    setScrollTarget(hash);
+  }
+  const handlePop = () => {
+    const p = getCurrentPath() || '/';
+    resolveRoute(p);
+    const h = window.location.hash.slice(1);
+    if (h && (p === '/' || p === '')) {
+      setScrollTarget(h);
+    }
+  };
   window.addEventListener('popstate', handlePop);
   return () => window.removeEventListener('popstate', handlePop);
 }, [resolveRoute]);

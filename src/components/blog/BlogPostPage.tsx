@@ -17,6 +17,7 @@ import blog4 from '../../assets/Blog/img/blog4.jpeg.webp';
 import blog5 from '../../assets/Blog/img/blog5.jpeg.webp';
 import blog6 from '../../assets/Blog/img/blog6.jpeg.webp';
 import blog7 from '../../assets/Blog/img/blog7.jpeg.webp';
+import blog8 from '../../assets/Blog/img/blog1.jpeg.webp';
 
 interface BlogPostPageProps {
   locale?: Locale;
@@ -119,7 +120,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   }, [postId]);
 
   // Blog images array - mapped by sequence
-  const blogImages = [blog1, blog2, blog3, blog4, blog5, blog6, blog7];
+  const blogImages = [blog1, blog2, blog3, blog4, blog5, blog6, blog7, blog8];
 
   // Map category names from CSV to translation keys
   const categoryMap: Record<string, string> = {

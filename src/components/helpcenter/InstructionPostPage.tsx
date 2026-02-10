@@ -54,7 +54,13 @@ export const InstructionPostPage: React.FC<InstructionPostPageProps> = ({
   });
 
   const [anchor, setAnchor] = useState(() => {
-    return window.location.hash.slice(1); // Remove #
+    const h = window.location.hash.slice(1);
+    if (!h) return '';
+    try {
+      return decodeURIComponent(h);
+    } catch {
+      return h;
+    }
   });
 
   // Listen for URL changes
@@ -102,36 +108,55 @@ export const InstructionPostPage: React.FC<InstructionPostPageProps> = ({
     };
   }, []);
 
-  // Scroll to anchor or top when instructionId changes
+  // Scroll to anchor or top when instructionId changes (including first load with hash)
   useEffect(() => {
-    if (instructionId) {
-      // Update anchor from URL hash
-      const hash = window.location.hash.slice(1);
-      setAnchor(hash);
-      
-      if (hash) {
-        // Wait for content to render, then scroll to anchor
-        setTimeout(() => {
-          const element = document.getElementById(hash) || 
-                         document.querySelector(`[data-anchor="${hash}"]`);
-          if (element) {
-            const navHeight = 64;
-            const backButtonSectionHeight = isMobile ? 48 : 72; // py-3 (24px) + button on mobile, py-6 (48px) + button on desktop
-            const totalOffset = navHeight + backButtonSectionHeight;
-            
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - totalOffset - 20;
-            
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: 'smooth'
-            });
-          }
-        }, 300);
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!instructionId) return;
+
+    const rawHash = window.location.hash.slice(1);
+    let hash = '';
+    if (rawHash) {
+      try {
+        hash = decodeURIComponent(rawHash);
+      } catch {
+        hash = rawHash;
       }
     }
+    setAnchor(hash);
+
+    if (!hash) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    // Content is rendered via dangerouslySetInnerHTML; on first load the DOM may not be ready.
+    // Poll for the element and scroll when it appears (or give up after ~2s).
+    const navHeight = 64;
+    const backButtonSectionHeight = isMobile ? 48 : 72;
+    const totalOffset = navHeight + backButtonSectionHeight;
+
+    const scrollToAnchor = () => {
+      const element =
+        document.getElementById(hash) ||
+        document.querySelector(`[data-anchor="${hash}"]`);
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - totalOffset - 20;
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        return true;
+      }
+      return false;
+    };
+
+    let attempts = 0;
+    const maxAttempts = 40; // 40 * 50ms = 2s
+    const intervalId = setInterval(() => {
+      attempts += 1;
+      if (scrollToAnchor() || attempts >= maxAttempts) {
+        clearInterval(intervalId);
+      }
+    }, 50);
+
+    return () => clearInterval(intervalId);
   }, [instructionId, isMobile]);
 
   // Get instruction data

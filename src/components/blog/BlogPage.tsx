@@ -18,6 +18,7 @@ import blog4 from '../../assets/Blog/img/blog4.jpeg.webp';
 import blog5 from '../../assets/Blog/img/blog5.jpeg.webp';
 import blog6 from '../../assets/Blog/img/blog6.jpeg.webp';
 import blog7 from '../../assets/Blog/img/blog7.jpeg.webp';
+import blog8 from '../../assets/Blog/img/blog1.jpeg.webp';
 
 interface BlogPageProps {
   locale?: Locale;
@@ -83,7 +84,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
   };
 
   // Blog images array - mapped by sequence
-  const blogImages = [blog1, blog2, blog3, blog4, blog5, blog6, blog7];
+  const blogImages = [blog1, blog2, blog3, blog4, blog5, blog6, blog7, blog8];
 
   // Get blog posts from CSV and markdown files
   const allBlogPosts: BlogCardProps[] = useMemo(() => {
