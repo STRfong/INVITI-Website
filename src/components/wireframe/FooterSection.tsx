@@ -121,7 +121,7 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
 
         <div className="text-center">
           <p className="small mb-0" style={{ color: '#FDFDFD', opacity: 0.8 }}>
-            {t.footer.copyright}
+            {t.footer.copyright.replace('{year}', new Date().getFullYear().toString())}
           </p>
         </div>
       </div>
