@@ -27,6 +27,19 @@ export interface BlogPost extends BlogPostMetadata {
   content: string;
 }
 
+/** Parse date string from blog CSV (e.g. "2025年11月27日", "2026年2月6日") to timestamp for sorting. */
+function parseBlogDate(dateStr: string): number {
+  if (!dateStr || !dateStr.trim()) return 0;
+  const s = dateStr.trim();
+  const match = s.match(/^(\d{4})年(\d{1,2})月(\d{1,2})日$/);
+  if (match) {
+    const [, y, m, d] = match;
+    const date = new Date(parseInt(y!, 10), parseInt(m!, 10) - 1, parseInt(d!, 10));
+    return date.getTime();
+  }
+  return new Date(s).getTime();
+}
+
 // Parse CSV data with proper handling of quoted fields
 function parseCSV(csvText: string): BlogPostMetadata[] {
   const lines = csvText.trim().split('\n');
@@ -108,9 +121,23 @@ function parseCSV(csvText: string): BlogPostMetadata[] {
   return posts;
 }
 
-// Get all blog posts metadata
+// Get all blog posts metadata, sorted newest first
 export function getAllBlogPosts(): BlogPostMetadata[] {
-  return parseCSV(blogListCsv);
+  const posts = parseCSV(blogListCsv);
+  const sorted = [...posts].sort((a, b) => {
+    const dateA = parseBlogDate(a.date || '');
+    const dateB = parseBlogDate(b.date || '');
+    return dateB - dateA; // 從新到舊
+  });
+  if (import.meta.env?.DEV) {
+    console.debug('[getAllBlogPosts] sort (newest first):', sorted.map((p, i) => ({
+      order: i + 1,
+      title: p.title.slice(0, 30),
+      rawDate: p.date,
+      parsed: parseBlogDate(p.date) ? new Date(parseBlogDate(p.date)).toISOString().slice(0, 10) : 'invalid',
+    })));
+  }
+  return sorted;
 }
 
 // Get blog post by ID

@@ -22,19 +22,10 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ isMobile = false, loca
     '活動花絮': t.blogPage.events,
   };
 
-  // Get latest 3 blog posts with same processing as BlogPage
+  // Get latest 3 blog posts (getAllBlogPosts already returns newest first)
   const latestPosts: BlogCardProps[] = useMemo(() => {
     const allPosts = getAllBlogPosts();
-    
-    // Sort by date (newest first) - assuming date format is YYYY-MM-DD or similar
-    const sortedPosts = [...allPosts].sort((a, b) => {
-      const dateA = new Date(a.date || '').getTime();
-      const dateB = new Date(b.date || '').getTime();
-      return dateB - dateA; // Descending order (newest first)
-    });
-    
-    // Get latest 3 posts
-    const latest3 = sortedPosts.slice(0, 3);
+    const latest3 = allPosts.slice(0, 3);
     
     // Default thumbnails (same as BlogPage)
     const thumbnails = [

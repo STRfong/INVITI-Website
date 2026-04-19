@@ -502,7 +502,7 @@ export const tc: Translations = {
     enterprise: '企業',
     teams: '團隊',
     individuals: '個人',
-    copyright: '© 2025 藝氣股份有限公司 Inviti All rights reserved.'
+    copyright: '© {year} 藝氣股份有限公司 Inviti All rights reserved.'
   },
   demoBooking: {
     title: '預約展示',
@@ -817,7 +817,7 @@ export const en: Translations = {
     enterprise: 'Enterprise',
     teams: 'Teams',
     individuals: 'Individuals',
-    copyright: '© 2025 Inviti All rights reserved.'
+    copyright: '© {year} Inviti All rights reserved.'
   },
   demoBooking: {
     title: 'Book a Demo',
@@ -1132,7 +1132,7 @@ export const ja: Translations = {
     enterprise: '企業',
     teams: 'チーム',
     individuals: '個人',
-    copyright: '© 2025 Inviti All rights reserved.'
+    copyright: '© {year} Inviti All rights reserved.'
   },
   demoBooking: {
     title: 'デモを予約',
@@ -1447,7 +1447,7 @@ export const zhHans: Translations = {
     enterprise: '企业',
     teams: '团队',
     individuals: '个人',
-    copyright: '© 2025 艺气股份有限公司 Inviti All rights reserved.'
+    copyright: '© {year} 艺气股份有限公司 Inviti All rights reserved.'
   },
   demoBooking: {
     title: '预约展示',
