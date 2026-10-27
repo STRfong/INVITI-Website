@@ -17,7 +17,9 @@
 
 | 服務 | 映像 | mem_limit | 備註 |
 | --- | --- | --- | --- |
-| web | `ghcr.io/strfong/inviti-website:<SHA>` | 64m | nginx:1.30-alpine，只接 `proxy` 網路，alias `inviti-website-web` |
+| inviti-website | `ghcr.io/strfong/inviti-website:<SHA>` | 64m | nginx:1.30-alpine，只接 `proxy` 網路，alias `inviti-website-web` |
+
+**服務名稱不能叫 `web`、`nginx` 這類通用名稱**：compose 會把服務名稱登記成 `proxy` 網路上的 DNS 名稱，而 tool-web、vipsystem 的 nginx 也接在 `proxy` 上、以 `web:8080` 連自己的應用。2026-10-27 這裡原本叫 `web`，tool-web 重建後 nginx 解析到官網容器，`tool.strnetwork.cc` 顯示成官網約 6 分鐘。`tests/test_deploy.sh` 會檢查服務名稱帶 `inviti-website` 前綴。
 
 nginx 設定（`deploy/linode/nginx/default.conf`）建進映像裡，改設定就是改程式碼，走同一條 CI：
 
@@ -50,7 +52,7 @@ Dockerfile 刻意放在 `deploy/linode/` 而不是 repo 根目錄：根目錄的
 1. 參數必須剛好是一個 40 碼小寫 SHA，否則 exit 2。
 2. `flock` 鎖住 `/run/lock/inviti-website-deploy.lock`，另一次部署進行中時 exit 3。
 3. 主機上還沒有這個 SHA 的映像才 `docker pull`，失敗 exit 4、`.env` 不變；已經有就跳過，GHCR 連不上時仍能退回主機上的舊版。
-4. 把 `.env` 的 `INVITI_WEBSITE_IMAGE_TAG` 改成新 SHA，`docker compose up -d web`。
+4. 把 `.env` 的 `INVITI_WEBSITE_IMAGE_TAG` 改成新 SHA，`docker compose up -d inviti-website`。
 5. 健康檢查：在新容器裡用 wget 打 `/` 與 `/blog`（確認 SPA fallback），每 2 秒一次、最多 10 次。Caddy 每次連線都重新解析 `inviti-website-web`，不需要 reload。
 6. 成功：主機上只保留最近 5 個 SHA 映像（正在用的和上一版一定保留）。
 7. 失敗：寫回上一版 tag 並重啟。
@@ -164,7 +166,7 @@ deploy job 先跑 `tailscale/github-action@v4`，以 `tag:ci` 臨時節點加入
 | 手動部署某個 commit | `./deploy.sh <40 碼 SHA>` |
 | 退回上一版 | `docker image ls ghcr.io/strfong/inviti-website` 找上一個 SHA，`./deploy.sh <上一個 SHA>` |
 | 暫停自動部署 | `gh variable set DEPLOY_ENABLED --body false -R STRfong/INVITI-Website`（仍會建置，只是不部署） |
-| 看 log | `docker compose logs -f --tail=100 web` |
+| 看 log | `docker compose logs -f --tail=100 inviti-website` |
 
 ## 搬遷：試跑與正式切換
 

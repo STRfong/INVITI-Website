@@ -13,7 +13,7 @@ NEW=2222222222222222222222222222222222222222
 BAD=badbadbadbadbadbadbadbadbadbadbadbadbad0
 NOSPA=deaddeaddeaddeaddeaddeaddeaddeaddeaddead
 IMAGE=ghcr.io/strfong/inviti-website
-UP_WEB='compose up -d web'
+UP_WEB='compose up -d inviti-website'
 
 failures=0
 pass() { echo "ok   - $1"; }
@@ -82,15 +82,15 @@ FAKE_PULL_EXIT=1 run "$NEW"
 [[ $CODE -eq 4 && $(tag_now) == "$OLD" ]] && ! grep -q 'up -d' "$T/calls" \
   && pass "pull 失敗時不換版" || fail "pull 失敗時不換版（exit $CODE）"
 
-# --- 成功：web 換到新 tag、印出新舊 tag ---
+# --- 成功：換到新 tag、印出新舊 tag ---
 setup
 run "$NEW"
 grep -q "pull $IMAGE:$NEW" "$T/calls" \
   && [[ $(up_web_count) -eq 1 && $(grep -c 'compose up' "$T/calls") -eq 1 ]] \
   && [[ $CODE -eq 0 && $(tag_now) == "$NEW" && $OUT == *"$OLD"* && $OUT == *"$NEW"* ]] \
-  && pass "成功部署：web 換到新 tag" || fail "成功部署：web 換到新 tag（exit $CODE）"
-grep -q 'compose exec -T web wget .*http://127.0.0.1:8080/$' "$T/calls" \
-  && grep -q 'compose exec -T web wget .*http://127.0.0.1:8080/blog$' "$T/calls" \
+  && pass "成功部署：換到新 tag" || fail "成功部署：換到新 tag（exit $CODE）"
+grep -q 'compose exec -T inviti-website wget .*http://127.0.0.1:8080/$' "$T/calls" \
+  && grep -q 'compose exec -T inviti-website wget .*http://127.0.0.1:8080/blog$' "$T/calls" \
   && pass "健康檢查打首頁與前端路由" || fail "健康檢查打首頁與前端路由"
 [[ $(wc -l < "$T/project/.env") -eq 1 ]] && pass "換版不會重複寫入變數" || fail "換版不會重複寫入變數"
 
@@ -155,6 +155,14 @@ removed=$(grep -c 'image rm' "$T/calls" || true)
   && grep -q "image rm $IMAGE:$(printf '%040d' 7)" "$T/calls" \
   && [[ $CODE -eq 0 && $removed -eq 1 ]] \
   && pass "清理舊映像只留 5 個" || fail "清理舊映像只留 5 個（刪了 $removed 個）"
+
+# --- compose：接上共用 proxy 網路的服務，名稱必須帶專案前綴 ---
+# 服務名稱會變成 proxy 網路上的 DNS 名稱；叫 web 會搶走 tool-web／vipsystem nginx 的 web:8080
+COMPOSE="$HERE/../docker-compose.yml"
+bad=$(sed -n '/^services:/,/^[^ ]/{s/^  \([a-z0-9_-]*\):$/\1/p}' "$COMPOSE" | grep -v '^inviti-website' || true)
+[[ -z $bad ]] && grep -q '^  inviti-website:$' "$COMPOSE" \
+  && pass "compose 服務名稱都帶 inviti-website 前綴" || fail "compose 服務名稱沒有帶前綴：$bad"
+grep -q "^SERVICE=inviti-website " "$DEPLOY" && pass "deploy.sh 的 SERVICE 與 compose 一致" || fail "deploy.sh 的 SERVICE 與 compose 不一致"
 
 echo
 if [[ $failures -eq 0 ]]; then echo "全部通過"; else echo "$failures 個失敗"; exit 1; fi

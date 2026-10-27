@@ -12,7 +12,9 @@
 name: inviti-website
 
 services:
-  web:
+  # 服務名稱會登記成 proxy 網路上的 DNS 名稱：不能叫 web、nginx 這類通用名稱，
+  # 否則 tool-web／vipsystem 的 nginx 查 web 時會解析到這裡（2026-10-27 發生過，tool.strnetwork.cc 顯示成官網）
+  inviti-website:
     image: ghcr.io/strfong/inviti-website:${INVITI_WEBSITE_IMAGE_TAG:?請在 .env 設定 INVITI_WEBSITE_IMAGE_TAG}
     healthcheck:
       # nginx:alpine 沒有 curl，用 busybox 的 wget

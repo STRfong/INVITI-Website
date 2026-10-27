@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 部署指定 commit 的映像到這台主機：拉映像 → 換 tag → 重建 web → 健康檢查，失敗自動退回上一版。
+# 部署指定 commit 的映像到這台主機：拉映像 → 換 tag → 重建容器 → 健康檢查，失敗自動退回上一版。
 # 由 VIPSystem 的 deploy.sh 簡化而來：純靜態網站，沒有資料庫備份、worker 與前置 nginx。
 # 安裝在 /opt/inviti-website/deploy.sh（root:root 700），由 GitHub Actions 經 deploy 使用者的
 # SSH forced command + sudo 呼叫，也可以用 root 手動執行：/opt/inviti-website/deploy.sh <40 碼 commit SHA>
@@ -12,7 +12,7 @@ set -euo pipefail
 PROJECT_DIR=${DEPLOY_PROJECT_DIR:-/opt/inviti-website}
 LOCK_FILE=${DEPLOY_LOCK_FILE:-/run/lock/inviti-website-deploy.lock}
 IMAGE=ghcr.io/strfong/inviti-website
-SERVICE=web
+SERVICE=inviti-website              # compose 服務名稱（不能叫 web，見 docker-compose.yml）
 APP_PORT=8080
 TAG_VAR=INVITI_WEBSITE_IMAGE_TAG     # .env 裡記錄目前版本的變數
 HEALTH_PATHS=(/ /blog)               # 首頁 + 一條前端路由（確認 SPA fallback 正常）
