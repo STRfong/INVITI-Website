@@ -2,7 +2,7 @@
 
 > ⚠️ **自動部署打開後（`DEPLOY_ENABLED=true`），push 到 `main` 等於上正式站**（合併 PR、把 upstream 合進來再 push 也是），約 3～5 分鐘後生效，換容器時正式站會中斷 1～2 秒。
 
-主機 `172.104.120.210`（Ubuntu 24.04、x86_64）與 tool-web、VIPSystem 共用：整台只有一個 Caddy（`/opt/caddy`）對外開 80／443，各專案透過 Docker 網路 `proxy` 接上 Caddy。官網放在 `/opt/inviti-website`，compose 專案名稱 `inviti-website`。
+主機公開 IP `172.104.120.210`、SSH 只走 Tailscale `100.102.167.108`（Ubuntu 24.04、x86_64）與 tool-web、VIPSystem 共用：整台只有一個 Caddy（`/opt/caddy`）對外開 80／443，各專案透過 Docker 網路 `proxy` 接上 Caddy。官網放在 `/opt/inviti-website`，compose 專案名稱 `inviti-website`。
 
 這份文件中的指令都不含密碼，PAT、私鑰都不要貼進對話或 commit。
 
@@ -31,7 +31,7 @@ nginx 設定（`deploy/linode/nginx/default.conf`）建進映像裡，改設定�
 
 1. **test**：`npm ci` + `npm run build`（專案沒有測試，至少確認建置過得了）。PR 到 `main` 只跑這一步。
 2. **build**：用 `deploy/linode/Dockerfile` 建置 `linux/amd64` 映像，先在 runner 上跑 `deploy/linode/tests/smoke_image.sh`（首頁、前端路由、assets 快取標頭與 gzip、404、容器內 wget），通過才推到 private GHCR：`ghcr.io/strfong/inviti-website:<40 碼 commit SHA>` 與 `:main`。
-3. **deploy**：repo variable `DEPLOY_ENABLED` 為 `true` 時，用受限的 SSH 金鑰連到主機執行 `deploy.sh <commit SHA>`。
+3. **deploy**：repo variable `DEPLOY_ENABLED` 為 `true` 時，先經 Tailscale 以 `tag:ci` 加入 tailnet，再用受限的 SSH 金鑰連到主機執行 `deploy.sh <commit SHA>`。
 4. **cleanup**：GHCR 只保留最近 20 個版本，失敗不影響部署。
 
 在 Apple Silicon 上手動建置要加 `--platform linux/amd64`；本機驗證不需要（只是 nginx + 靜態檔）：
@@ -77,8 +77,8 @@ Dockerfile 刻意放在 `deploy/linode/` 而不是 repo 根目錄：根目錄的
 自動部署只換映像 tag，不會更新上述檔案本身。改了 repo 裡的檔案要自己裝到主機，例如：
 
 ```bash
-scp -i ~/.ssh/id_ed25519_tool_web -o IdentitiesOnly=yes deploy/linode/deploy.sh root@172.104.120.210:/tmp/deploy.sh
-ssh -i ~/.ssh/id_ed25519_tool_web -o IdentitiesOnly=yes root@172.104.120.210 \
+scp -i ~/.ssh/id_ed25519_tool_web -o IdentitiesOnly=yes deploy/linode/deploy.sh root@100.102.167.108:/tmp/deploy.sh
+ssh -i ~/.ssh/id_ed25519_tool_web -o IdentitiesOnly=yes root@100.102.167.108 \
   'install -o root -g root -m 700 /tmp/deploy.sh /opt/inviti-website/deploy.sh && rm /tmp/deploy.sh'
 ```
 
@@ -86,7 +86,7 @@ ssh -i ~/.ssh/id_ed25519_tool_web -o IdentitiesOnly=yes root@172.104.120.210 \
 
 ## 主機一次性設定
 
-以下以 root 在主機執行。GHCR 登入、`deploy` 使用者、Caddy 與 `proxy` 網路都是 tool-web 搬遷時建立的，整台主機共用。
+以下以 root 在主機執行（SSH 連 `100.102.167.108`，本機 Tailscale 要連線並切在 strnetwork.cc）。GHCR 登入、`deploy` 使用者、Caddy、`proxy` 網路與 Tailscale 都是 tool-web 搬遷時建立的，整台主機共用。
 
 ### 1. 目錄與檔案
 
@@ -123,8 +123,8 @@ command="sudo -n /opt/inviti-website/deploy.sh $SSH_ORIGINAL_COMMAND",no-pty,no-
 驗證：
 
 ```bash
-ssh -i <金鑰> deploy@172.104.120.210 ls         # 應該 exit 2
-ssh -i <金鑰> deploy@172.104.120.210            # 應該 exit 2，沒有 shell
+ssh -i <金鑰> deploy@100.102.167.108 ls         # 應該 exit 2
+ssh -i <金鑰> deploy@100.102.167.108            # 應該 exit 2，沒有 shell
 ```
 
 金鑰外洩時：刪掉 authorized_keys 那一行、`gh variable set DEPLOY_ENABLED --body false -R STRfong/INVITI-Website`，再重新產生金鑰。最多只能讓主機重新部署 GHCR 上已有的某個官網 commit，碰不到其他專案。
@@ -135,10 +135,20 @@ ssh -i <金鑰> deploy@172.104.120.210            # 應該 exit 2，沒有 shell
 
 ```bash
 gh secret set DEPLOY_SSH_KEY -R STRfong/INVITI-Website < <私鑰檔>             # 設定後刪掉本機私鑰
-gh secret set DEPLOY_HOST -R STRfong/INVITI-Website --body 172.104.120.210
-gh secret set DEPLOY_KNOWN_HOSTS -R STRfong/INVITI-Website < <known_hosts 檔>  # 可沿用 vipsystem 那份
+gh secret set DEPLOY_HOST -R STRfong/INVITI-Website --body 100.102.167.108                  # Tailscale IP
+gh secret set DEPLOY_KNOWN_HOSTS -R STRfong/INVITI-Website < <known_hosts 檔>  # 100.102.167.108 的 ed25519 主機金鑰，指紋 SHA256:KKPR8VSc7zXT+iztbm8P4zcfTu0L/z7L9dCVhlOPMXE
+gh secret set TS_OAUTH_CLIENT_ID -R STRfong/INVITI-Website --body <Trust credential 的 Client ID>
+gh secret set TS_AUDIENCE -R STRfong/INVITI-Website --body <Trust credential 的 Audience>
 gh variable set DEPLOY_ENABLED -R STRfong/INVITI-Website --body true          # 正式切換並確認穩定後才設
 ```
+
+### 6. Tailscale Trust credential（每個 repo 各一個）
+
+deploy job 先跑 `tailscale/github-action@v4`，以 `tag:ci` 臨時節點加入 strnetwork.cc 的 tailnet，job 結束自動登出。驗證用 workload identity federation（GitHub OIDC），GitHub 上不存長期有效的 Tailscale 密碼；`TS_OAUTH_CLIENT_ID`、`TS_AUDIENCE` 不是秘密。
+
+在 Tailscale 後台新增 Trust credential：Issuer GitHub、Subject `repo:STRfong/INVITI-Website:ref:refs/heads/main`（只有 main 的 workflow 能用）、Scope Auth Keys：Write、Tag `tag:ci`。ACL 不用改（已允許 `tag:ci` 連 `strfong-linode` 的 `tcp:22`）。主機架構與救援方式見 tool-web 的 `deploy/README.md`「Tailscale：SSH 只走 tailnet」。
+
+### 7. GHCR 套件設定
 
 第一次 build 推上 GHCR 後，到 STRfong 的 Packages → `inviti-website` → Package settings：
 

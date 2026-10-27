@@ -87,8 +87,16 @@ jobs:
     runs-on: ubuntu-24.04
     # 靜態網站換版只要幾秒，健康檢查最多約 20 秒
     timeout-minutes: 5
-    permissions: {}
+    permissions:
+      id-token: write  # Tailscale workload identity federation 用 GitHub OIDC 換臨時憑證
     steps:
+      # 主機的 22 port 只開給 tailnet，runner 先以 tag:ci 臨時節點加入，job 結束自動登出
+      - uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:ci
+          ping: ${{ secrets.DEPLOY_HOST }}
       # 這把金鑰在主機上被 forced command 綁死，只能執行 /opt/inviti-website/deploy.sh <sha>
       - name: 觸發主機部署
         env:
