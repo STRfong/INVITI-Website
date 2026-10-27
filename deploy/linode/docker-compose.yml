@@ -1,0 +1,34 @@
+# /opt/inviti-website/docker-compose.yml
+# 對應 Zeabur 上的 INVITI-Website 服務（綁 inviti.vip）。純靜態網站：只有一個 nginx 容器，
+# 不需要資料庫、備份與 app.env
+#
+# 目錄配置：
+#   /opt/inviti-website/.env ← compose 用的 INVITI_WEBSITE_IMAGE_TAG，600
+#
+# 映像由 GitHub Actions 建置後推到 GHCR，主機不建置；換版用 /opt/inviti-website/deploy.sh <commit SHA>
+# （會改 .env 的 INVITI_WEBSITE_IMAGE_TAG），手動 docker compose up -d 也只會用 .env 記錄的版本
+#
+# 記憶體上限：同主機還有 tool-web、VIPSystem，設 mem_limit 避免單一服務失控拖垮整台
+name: inviti-website
+
+services:
+  web:
+    image: ghcr.io/strfong/inviti-website:${INVITI_WEBSITE_IMAGE_TAG:?請在 .env 設定 INVITI_WEBSITE_IMAGE_TAG}
+    healthcheck:
+      # nginx:alpine 沒有 curl，用 busybox 的 wget
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    # 只接 proxy 網路，Caddy 以 alias inviti-website-web 連進來
+    networks:
+      proxy:
+        aliases:
+          - inviti-website-web
+    mem_limit: 64m
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true

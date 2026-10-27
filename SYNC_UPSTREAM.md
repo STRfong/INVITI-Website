@@ -40,6 +40,20 @@ git push origin main
 
 ---
 
+> ⚠️ 自動部署打開後，第 5 步 `git push origin main` 就會部署到正式站（`inviti.vip`），push 前先在本機 `npm run build` 確認建置過得了。部署方式見 `deploy/linode/README.md`。
+
+---
+
+## 只存在於本 fork 的檔案
+
+以下檔案 upstream 沒有，合併時不會衝突，也不要推回 upstream：
+
+- `.github/workflows/deploy.yml` — GitHub Actions → GHCR → Linode 自動部署
+- `deploy/linode/` — 自架部署用的 Dockerfile、nginx 設定、compose、deploy.sh
+- `Dockerfile`（根目錄）— Zeabur 用，搬遷完成前保留
+
+---
+
 ## 已知衝突點與處理方式
 
 ### 1. `vite.config.ts` — `base` 與 `outDir`

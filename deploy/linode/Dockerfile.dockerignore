@@ -1,0 +1,14 @@
+.git
+.github
+.claude
+.local_doc
+node_modules
+dist
+build
+deploy
+!deploy/linode/nginx/default.conf
+.DS_Store
+.env
+.env.*
+Dockerfile
+.dockerignore

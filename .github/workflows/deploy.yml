@@ -1,0 +1,119 @@
+# push 到 main：建置檢查 → 建置映像推到 private GHCR → SSH 觸發主機上的 deploy.sh 換版
+# PR 到 main 只跑建置檢查；其他分支不建置映像
+# 主機端設定與手動部署／回滾見 deploy/linode/README.md
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# 同一個分支同時只跑一次，後到的排隊、不取消進行中的部署
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/strfong/inviti-website
+
+jobs:
+  # 專案沒有測試，至少確認 vite build 過得了；deploy.sh 的測試只在改到 deploy/ 時才有意義，放本機跑
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci --no-audit --no-fund
+      - name: vite build
+        run: npm run build
+
+  build:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # 先建到 runner 本機驗證，通過才推送，避免把壞掉的映像推上 GHCR
+      - name: 建置映像
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deploy/linode/Dockerfile
+          platforms: linux/amd64
+          load: true
+          tags: ${{ env.IMAGE }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      # 首頁、前端路由 fallback、assets 快取標頭、容器內 wget：nginx 設定錯了在這裡爆，而不是上線後
+      - name: 驗證映像
+        run: deploy/linode/tests/smoke_image.sh "$IMAGE:$GITHUB_SHA"
+      - name: 推送到 GHCR
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deploy/linode/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:main
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          # 不產生 attestation，GHCR 上才不會多出無 tag 的版本
+          provenance: false
+          sbom: false
+          cache-from: type=gha
+
+  deploy:
+    needs: build
+    if: vars.DEPLOY_ENABLED == 'true' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    # 靜態網站換版只要幾秒，健康檢查最多約 20 秒
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      # 這把金鑰在主機上被 forced command 綁死，只能執行 /opt/inviti-website/deploy.sh <sha>
+      - name: 觸發主機部署
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o BatchMode=yes \
+            "deploy@$DEPLOY_HOST" "$GITHUB_SHA"
+
+  cleanup:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      packages: write
+    # 清理失敗不影響部署，改為手動清
+    continue-on-error: true
+    steps:
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: inviti-website
+          package-type: container
+          min-versions-to-keep: 20

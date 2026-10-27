@@ -1,0 +1,12 @@
+# /opt/caddy/sites/inviti-website.caddy
+# 試跑期間先不放進 /opt/caddy/sites/（避免 DNS 未切就去申請憑證），正式切換時才放
+inviti.vip {
+	reverse_proxy inviti-website-web:8080 {
+		# {client_ip} 已依 Caddyfile 的 trusted_proxies 取自 CF-Connecting-IP
+		header_up X-Real-IP {client_ip}
+	}
+}
+
+www.inviti.vip {
+	redir https://inviti.vip{uri} permanent
+}
