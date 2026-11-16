@@ -18,6 +18,10 @@ import blog5 from '../../assets/Blog/img/blog5.jpeg.webp';
 import blog6 from '../../assets/Blog/img/blog6.jpeg.webp';
 import blog7 from '../../assets/Blog/img/blog7.jpeg.webp';
 import blog8 from '../../assets/Blog/img/blog1.jpeg.webp';
+import blogUpdate1 from '../../assets/Blog/img/blog_update1.webp';
+import blogUpdate2 from '../../assets/Blog/img/blog_update2.webp';
+import blogUpdate3 from '../../assets/Blog/img/blog_update3.webp';
+import { getBlogImageMap } from '../../utils/blogImages';
 
 interface BlogPostPageProps {
   locale?: Locale;
@@ -120,7 +124,8 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   }, [postId]);
 
   // Blog images array - mapped by sequence
-  const blogImages = [blog1, blog2, blog3, blog4, blog5, blog6, blog7, blog8];
+  // 前 3 篇（最新的產品更新）用專屬插圖縮圖；其餘沿用原本的照片
+  const blogImages = [blogUpdate1, blogUpdate2, blogUpdate3, blog1, blog2, blog3, blog4, blog5, blog6, blog7, blog8];
 
   // Map category names from CSV to translation keys
   const categoryMap: Record<string, string> = {
@@ -145,7 +150,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
     // Find the index of this post in all posts to get the corresponding image
     const allPosts = getAllBlogPosts();
     const postIndex = allPosts.findIndex(p => p.id === postId);
-    const heroImage = postIndex >= 0 ? (blogImages[postIndex] || '') : '';
+    const heroImage = postIndex >= 0 ? (getBlogImageMap(allPosts)[postId] || '') : '';
 
     return {
       id: metadata.id,

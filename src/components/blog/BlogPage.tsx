@@ -19,6 +19,10 @@ import blog5 from '../../assets/Blog/img/blog5.jpeg.webp';
 import blog6 from '../../assets/Blog/img/blog6.jpeg.webp';
 import blog7 from '../../assets/Blog/img/blog7.jpeg.webp';
 import blog8 from '../../assets/Blog/img/blog1.jpeg.webp';
+import blogUpdate1 from '../../assets/Blog/img/blog_update1.webp';
+import blogUpdate2 from '../../assets/Blog/img/blog_update2.webp';
+import blogUpdate3 from '../../assets/Blog/img/blog_update3.webp';
+import { getBlogImageMap } from '../../utils/blogImages';
 
 interface BlogPageProps {
   locale?: Locale;
@@ -84,19 +88,21 @@ export const BlogPage: React.FC<BlogPageProps> = ({
   };
 
   // Blog images array - mapped by sequence
-  const blogImages = [blog1, blog2, blog3, blog4, blog5, blog6, blog7, blog8];
+  // 前 3 篇（最新的產品更新）用專屬插圖縮圖；其餘沿用原本的照片
+  const blogImages = [blogUpdate1, blogUpdate2, blogUpdate3, blog1, blog2, blog3, blog4, blog5, blog6, blog7, blog8];
 
   // Get blog posts from CSV and markdown files
   const allBlogPosts: BlogCardProps[] = useMemo(() => {
     const allPosts = getAllBlogPosts();
     
+    const imageMap = getBlogImageMap(allPosts);
     return allPosts.map((post, index) => {
       // Get markdown content to extract excerpt
       const markdownContent = post.markdownPath ? getMarkdownContent(post.markdownPath) : '';
       const parsed = markdownContent ? parseMarkdown(markdownContent) : null;
       
-      // Get thumbnail based on sequence (index)
-      const thumbnail = blogImages[index] || '';
+      // 依標題配封面圖（utils/blogImages.ts）
+      const thumbnail = imageMap[post.id] || '';
       
       // Parse author name and role
       const authorName = post.author || 'INVITI 團隊';
