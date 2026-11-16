@@ -172,141 +172,123 @@ function markdownToHTML(markdown: string): string {
   const processedLines: string[] = [];
   
   // Track list state at each indentation level
+  // 每一層清單各自記錄是否有還沒關的 <li>，子清單要先關、再關外層的 <li>，HTML 結構才會正確
+  // （原本只記一個 <li>，子清單後面接回上一層時會先關 </li> 再關 </ul>，造成結構錯亂、間距跑掉）
   interface ListState {
-    type: 'ul' | 'ol' | null;
+    type: 'ul' | 'ol';
     level: number;
+    liOpen: boolean;
   }
   const listStack: ListState[] = [];
-  let openLiTag: number | null = null; // Track if we have an open <li> tag and at what indent level
-  
+
   function getIndentLevel(line: string): number {
     const match = line.match(/^(\s*)/);
     return match ? match[1].length : 0;
   }
-  
-  function closeListsToLevel(targetLevel: number) {
-    // If we have an open <li> at a level >= targetLevel, close it first
-    if (openLiTag !== null && openLiTag >= targetLevel) {
-      processedLines.push('</li>');
-      openLiTag = null;
-    }
-    
-    while (listStack.length > 0 && listStack[listStack.length - 1].level >= targetLevel) {
-      const state = listStack.pop()!;
-      if (state.type === 'ul') {
-        processedLines.push('</ul>');
-      } else if (state.type === 'ol') {
-        processedLines.push('</ol>');
-      }
-    }
+
+  function closeTop() {
+    const state = listStack.pop()!;
+    if (state.liOpen) processedLines.push('</li>');
+    processedLines.push(state.type === 'ul' ? '</ul>' : '</ol>');
   }
-  
-  function isListItem(line: string): boolean {
-    const trimmed = line.trim();
-    return /^[-*+]\s+/.test(trimmed) || /^\d+\.\s+/.test(trimmed);
+
+  function closeAllLists() {
+    while (listStack.length > 0) closeTop();
   }
-  
+
+  function openListItem(type: 'ul' | 'ol', indentLevel: number, liHtml: string) {
+    // 比這一層深的清單先全部關掉
+    while (listStack.length > 0 && listStack[listStack.length - 1].level > indentLevel) {
+      closeTop();
+    }
+    let top = listStack.length > 0 ? listStack[listStack.length - 1] : null;
+    if (top && top.level === indentLevel && top.type !== type) {
+      closeTop();
+      top = listStack.length > 0 ? listStack[listStack.length - 1] : null;
+    }
+    if (top && top.level === indentLevel) {
+      // 同一層的下一個項目：關掉上一個 <li>
+      if (top.liOpen) processedLines.push('</li>');
+    } else {
+      // 新的一層（第一層或子清單）：外層的 <li> 保持開著，子清單放在裡面
+      top = { type, level: indentLevel, liOpen: false };
+      listStack.push(top);
+      processedLines.push(type === 'ul' ? '<ul>' : '<ol>');
+    }
+    processedLines.push(liHtml);
+    top.liOpen = true;
+  }
+
+  function isListLine(line: string): boolean {
+    return /^\s*([-*+]|\d+\.)\s+/.test(line);
+  }
+
+  function nextNonEmpty(from: number): string | null {
+    for (let j = from; j < lines.length; j++) {
+      if (lines[j].trim()) return lines[j];
+    }
+    return null;
+  }
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const trimmed = line.trim();
     const indentLevel = getIndentLevel(line);
-    const nextLine = i + 1 < lines.length ? lines[i + 1] : null;
-    const nextIndentLevel = nextLine ? getIndentLevel(nextLine) : -1;
-    const nextIsListItem = nextLine ? isListItem(nextLine) : false;
-    const hasNestedContent = nextIsListItem && nextIndentLevel > indentLevel;
-    
+
     if (!trimmed) {
-      // Empty line - close open <li> and all lists
-      if (openLiTag !== null) {
-        processedLines.push('</li>');
-        openLiTag = null;
+      // 空行：後面還是條列、或是縮排的說明文字（Notion 匯出常見），清單就不要斷開
+      const next = nextNonEmpty(i + 1);
+      const continues = listStack.length > 0 && next !== null &&
+        (isListLine(next) || getIndentLevel(next) > listStack[0].level);
+      if (!continues) {
+        closeAllLists();
+        processedLines.push('');
       }
-      closeListsToLevel(0);
-      processedLines.push('');
       continue;
     }
-    
-    // Check for unordered list item (with indentation support)
+
+    // 縮排的一般文字（不是條列）：屬於上方條列項目的說明段落，放進該項目裡
+    const isImage = trimmed.startsWith('<img');
+    // 緊接在條列項目下一行、沒有空行的文字，就算沒縮排也算同一個項目的延續（Markdown 的規則）
+    const prevLine = i > 0 ? lines[i - 1] : '';
+    const isLazyContinuation = listStack.length > 0 && prevLine.trim() !== '' && indentLevel <= listStack[0].level;
+    if (listStack.length > 0 && (indentLevel > listStack[0].level || isLazyContinuation) &&
+        !isListLine(line) && (isImage || !trimmed.startsWith('<'))) {
+      while (listStack.length > 1 && listStack[listStack.length - 1].level >= indentLevel) {
+        closeTop();
+      }
+      if (isImage) {
+        processedLines.push(trimmed);
+      } else if (trimmed.startsWith('｜')) {
+        // 「｜」開頭：條列項目底下的補充提醒（細字，跟上一行的第一個字對齊）
+        processedLines.push(`<p class="list-note">${trimmed}</p>`);
+      } else {
+        processedLines.push(`<p>${trimmed}</p>`);
+      }
+      continue;
+    }
+
     const unorderedMatch = trimmed.match(/^[-*+]\s+(.+)$/);
     if (unorderedMatch) {
-      // Close any open <li> at this or deeper level
-      if (openLiTag !== null && openLiTag >= indentLevel) {
-        processedLines.push('</li>');
-        openLiTag = null;
-      }
-      
-      // Find the appropriate level in the stack
-      const currentState = listStack.length > 0 ? listStack[listStack.length - 1] : null;
-      
-      // If we need to start a new list or change list type at this level
-      if (!currentState || currentState.level !== indentLevel || currentState.type !== 'ul') {
-        // Close lists deeper than this level, but keep lists at shallower levels open
-        closeListsToLevel(indentLevel);
-        // Start new unordered list
-        listStack.push({ type: 'ul', level: indentLevel });
-        processedLines.push('<ul>');
-      }
-      
-      // Open <li> tag - close it only if there's no nested content
-      if (hasNestedContent) {
-        processedLines.push(`<li>${unorderedMatch[1]}`);
-        openLiTag = indentLevel;
-      } else {
-        processedLines.push(`<li>${unorderedMatch[1]}</li>`);
-      }
+      openListItem('ul', indentLevel, `<li>${unorderedMatch[1]}`);
       continue;
     }
-    
-    // Check for ordered list item (with indentation support)
+
     const orderedMatch = trimmed.match(/^(\d+)\.\s+(.+)$/);
     if (orderedMatch) {
-      const listNumber = orderedMatch[1];
-      const content = orderedMatch[2];
-      
-      // Close any open <li> at this or deeper level
-      if (openLiTag !== null && openLiTag >= indentLevel) {
-        processedLines.push('</li>');
-        openLiTag = null;
-      }
-      
-      // Find the appropriate level in the stack
-      const currentState = listStack.length > 0 ? listStack[listStack.length - 1] : null;
-      
-      // If we need to start a new list or change list type at this level
-      if (!currentState || currentState.level !== indentLevel || currentState.type !== 'ol') {
-        // Close lists deeper than this level, but keep lists at shallower levels open
-        closeListsToLevel(indentLevel);
-        // Start new ordered list
-        listStack.push({ type: 'ol', level: indentLevel });
-        processedLines.push('<ol>');
-      }
-      
       // Preserve the original numbering by using the value attribute
-      // Open <li> tag - close it only if there's no nested content
-      if (hasNestedContent) {
-        processedLines.push(`<li value="${listNumber}">${content}`);
-        openLiTag = indentLevel;
-      } else {
-        processedLines.push(`<li value="${listNumber}">${content}</li>`);
-      }
+      openListItem('ol', indentLevel, `<li value="${orderedMatch[1]}">${orderedMatch[2]}`);
       continue;
     }
-    
-    // Not a list item - close open <li> and all lists
-    if (openLiTag !== null) {
-      processedLines.push('</li>');
-      openLiTag = null;
-    }
-    closeListsToLevel(0);
+
+    // Not a list item - close all lists
+    closeAllLists();
     processedLines.push(line);
   }
-  
-  // Close any remaining open <li> and lists
-  if (openLiTag !== null) {
-    processedLines.push('</li>');
-  }
-  closeListsToLevel(0);
-  
+
+  // Close any remaining open lists
+  closeAllLists();
+
   html = processedLines.join('\n');
   
   // Paragraphs (lines that aren't already HTML tags)
@@ -314,7 +296,8 @@ function markdownToHTML(markdown: string): string {
   html = html.split('\n').map(line => {
     const trimmed = line.trim();
     if (!trimmed) return '';
-    if (trimmed.startsWith('<')) return trimmed; // Already HTML (including img tags)
+    // Already HTML (including img tags)；粗體、連結等行內標籤開頭的仍是一般段落，要包成 <p>
+    if (trimmed.startsWith('<') && !/^<(strong|em|b|i|a|code)[\s>]/.test(trimmed)) return trimmed;
     return '<p>' + trimmed + '</p>';
   }).join('\n');
   

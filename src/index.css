@@ -3039,6 +3039,57 @@ section {
   }
 }
 
+/* 段落間距：原本 2rem（手機 1.25rem）太鬆，段落之間看起來像斷開的區塊 */
+.blog-content p {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 767px) {
+  .blog-content p {
+    margin-bottom: 0.875rem;
+  }
+}
+
+/* 條列間距（index.css 才是實際載入的樣式；styles/globals.css 沒有被引用）
+   1. 段落後面緊接條列時（多為「…如下：」這類引導語），條列要貼近段落
+   2. 子項目：與上一層項目文字保持小間距，子清單結束後不額外留白 */
+.blog-content p:has(+ ul),
+.blog-content p:has(+ ol) {
+  margin-bottom: 0.5rem;
+}
+
+.blog-content ul,
+.blog-content ol {
+  margin-top: 0;
+}
+
+.blog-content li > ul,
+.blog-content li > ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* 「｜」補充提醒：細字、淡色，貼著上一行，「｜」與上一行的第一個字對齊 */
+.blog-content li > p.list-note {
+  margin-top: 0.125rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.9375em;
+  font-weight: 300;
+  color: #6B7046;
+  line-height: 1.6;
+}
+
+/* 條列項目底下的說明文字、圖片（Notion 匯出的縮排段落） */
+.blog-content li > p {
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.blog-content li > img {
+  display: block;
+  margin: 0.5rem 0 0.75rem;
+}
+
 /* Blog card avatar - ensure circular on all screen sizes */
 .blog-card-avatar {
   width: 28px;

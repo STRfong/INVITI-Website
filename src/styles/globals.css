@@ -257,6 +257,12 @@ section {
   line-height: 1.75;
 }
 
+/* 段落若緊接清單（多為引導語，例如「…如下：」），縮小與清單的間距避免脫節 */
+.blog-content p:has(+ ul),
+.blog-content p:has(+ ol) {
+  margin-bottom: 0.75rem;
+}
+
 .blog-content h2 {
   margin-top: 2.5rem;
   margin-bottom: 1rem;
@@ -275,6 +281,7 @@ section {
 
 .blog-content ul,
 .blog-content ol {
+  margin-top: 0;
   margin-bottom: 1.5rem;
   padding-left: 1.5rem;
 }
