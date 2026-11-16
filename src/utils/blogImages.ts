@@ -12,6 +12,8 @@ import blogUpdate2 from '../assets/Blog/img/blog_update2.webp';
 import blogUpdate3 from '../assets/Blog/img/blog_update3.webp';
 import blogUpdate4 from '../assets/Blog/img/blog_update4.webp';
 import blogUpdate5 from '../assets/Blog/img/blog_update5.webp';
+import blogUpdate6 from '../assets/Blog/img/blog_update6.webp';
+import blogUpdate7 from '../assets/Blog/img/blog_update7.webp';
 
 const IMAGE_BY_TITLE: Array<[string, string]> = [
   ['邀請說帖', blogUpdate1],
@@ -19,6 +21,8 @@ const IMAGE_BY_TITLE: Array<[string, string]> = [
   ['場次表單開關', blogUpdate3],
   ['貴賓自助調整出席', blogUpdate4],
   ['邀請表單欄位設定', blogUpdate5],
+  ['是否開車前往', blogUpdate6],
+  ['貴賓名單欄位選項', blogUpdate7],
 ];
 
 const FALLBACK_IMAGES = [blog1, blog2, blog3, blog4, blog5, blog6, blog7, blog1];
